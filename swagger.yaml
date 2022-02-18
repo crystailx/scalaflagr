@@ -1,0 +1,1449 @@
+swagger: '2.0'
+info:
+  description: >
+    Flagr is a feature flagging, A/B testing and dynamic configuration
+    microservice. The base path for all the APIs is "/api/v1".
+  title: Flagr
+  version: 1.1.13
+tags:
+  - name: flag
+    description: Everything about the flag
+  - name: segment
+    description: 'Segment defines the audience of the flag, it''s the user segmentation'
+  - name: constraint
+    description: Constraint is the unit of defining a small subset of users
+  - name: distribution
+    description: Distribution is the percent distribution of variants within that segment
+  - name: variant
+    description: Variants are the possible outcomes of flag evaluation
+  - name: evaluation
+    description: Evaluation is the process of evaluating a flag given the entity context
+  - name: health
+    description: Check if Flagr is healthy
+x-tagGroups:
+  - name: Flag Management
+    tags:
+      - flag
+      - segment
+      - constraint
+      - distribution
+      - variant
+      - tag
+  - name: Flag Evaluation
+    tags:
+      - evaluation
+  - name: Health Check
+    tags:
+      - health
+  - name: Export
+    tags:
+      - export
+consumes:
+  - application/json
+produces:
+  - application/json
+schemes:
+  - http
+basePath: /api/v1
+paths:
+  /flags:
+    get:
+      tags:
+        - flag
+      operationId: findFlags
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          format: int64
+          description: the numbers of flags to return
+        - in: query
+          name: enabled
+          type: boolean
+          description: return flags having given enabled status
+        - in: query
+          name: description
+          type: string
+          description: return flags exactly matching given description
+        - in: query
+          name: tags
+          type: string
+          description: return flags with the given tags (comma separated)
+        - in: query
+          name: description_like
+          type: string
+          description: return flags partially matching given description
+        - in: query
+          name: key
+          type: string
+          description: return flags matching given key
+        - in: query
+          name: offset
+          type: integer
+          format: int64
+          description: >-
+            return flags given the offset, it should usually set together with
+            limit
+        - in: query
+          name: preload
+          type: boolean
+          description: return flags with preloaded segments and variants
+        - in: query
+          name: deleted
+          type: boolean
+          description: return all deleted flags
+      responses:
+        '200':
+          description: list all the flags
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/flag'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      tags:
+        - flag
+      operationId: createFlag
+      parameters:
+        - in: body
+          name: body
+          description: create a flag
+          required: true
+          schema:
+            $ref: '#/definitions/createFlagRequest'
+      responses:
+        '200':
+          description: returns the created flag
+          schema:
+            $ref: '#/definitions/flag'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}':
+    get:
+      tags:
+        - flag
+      operationId: getFlag
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag to get
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: returns the flag
+          schema:
+            $ref: '#/definitions/flag'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    delete:
+      tags:
+        - flag
+      operationId: deleteFlag
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: OK deleted
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    put:
+      tags:
+        - flag
+      operationId: putFlag
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag to get
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: body
+          description: update a flag
+          required: true
+          schema:
+            $ref: '#/definitions/putFlagRequest'
+      responses:
+        '200':
+          description: returns the flag
+          schema:
+            $ref: '#/definitions/flag'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/restore':
+    put:
+      tags:
+        - flag
+      operationId: restoreFlag
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag to get
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: returns the flag
+          schema:
+            $ref: '#/definitions/flag'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/enabled':
+    put:
+      tags:
+        - flag
+      operationId: setFlagEnabled
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag to get
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: body
+          description: set flag enabled state
+          required: true
+          schema:
+            $ref: '#/definitions/setFlagEnabledRequest'
+      responses:
+        '200':
+          description: returns the flag
+          schema:
+            $ref: '#/definitions/flag'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/tags':
+    get:
+      tags:
+        - tag
+      operationId: findTags
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: tag ordered by tagID
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/tag'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      tags:
+        - tag
+      operationId: createTag
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: body
+          description: create a tag
+          required: true
+          schema:
+            $ref: '#/definitions/createTagRequest'
+      responses:
+        '200':
+          description: tag just created
+          schema:
+            $ref: '#/definitions/tag'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/tags/{tagID}':
+    delete:
+      tags:
+        - tag
+      operationId: deleteTag
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: tagID
+          description: numeric ID of the tag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: deleted
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/variants':
+    get:
+      tags:
+        - variant
+      operationId: findVariants
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: variant ordered by variantID
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/variant'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      tags:
+        - variant
+      operationId: createVariant
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: body
+          description: create a variant
+          required: true
+          schema:
+            $ref: '#/definitions/createVariantRequest'
+      responses:
+        '200':
+          description: variant just created
+          schema:
+            $ref: '#/definitions/variant'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/variants/{variantID}':
+    put:
+      tags:
+        - variant
+      operationId: putVariant
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: variantID
+          description: numeric ID of the variant
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: body
+          description: update a variant
+          required: true
+          schema:
+            $ref: '#/definitions/putVariantRequest'
+      responses:
+        '200':
+          description: variant just updated
+          schema:
+            $ref: '#/definitions/variant'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    delete:
+      tags:
+        - variant
+      operationId: deleteVariant
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: variantID
+          description: numeric ID of the variant
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: deleted
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/segments':
+    get:
+      tags:
+        - segment
+      operationId: findSegments
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag to get
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: segments ordered by rank of the flag
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/segment'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      tags:
+        - segment
+      operationId: createSegment
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag to get
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: body
+          description: create a segment under a flag
+          required: true
+          schema:
+            $ref: '#/definitions/createSegmentRequest'
+      responses:
+        '200':
+          description: segment created
+          schema:
+            $ref: '#/definitions/segment'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/segments/reorder':
+    put:
+      tags:
+        - segment
+      operationId: putSegmentsReorder
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: body
+          description: reorder segments
+          required: true
+          schema:
+            $ref: '#/definitions/putSegmentReorderRequest'
+      responses:
+        '200':
+          description: segments reordered
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/segments/{segmentID}':
+    put:
+      tags:
+        - segment
+      operationId: putSegment
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: segmentID
+          description: numeric ID of the segment
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: body
+          description: update a segment
+          required: true
+          schema:
+            $ref: '#/definitions/putSegmentRequest'
+      responses:
+        '200':
+          description: segment updated
+          schema:
+            $ref: '#/definitions/segment'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    delete:
+      tags:
+        - segment
+      operationId: deleteSegment
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: segmentID
+          description: numeric ID of the segment
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: deleted
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/segments/{segmentID}/constraints':
+    get:
+      tags:
+        - constraint
+      operationId: findConstraints
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: segmentID
+          description: numeric ID of the segment
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: constraints under the segment
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/constraint'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      tags:
+        - constraint
+      operationId: createConstraint
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: segmentID
+          description: numeric ID of the segment
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: body
+          description: create a constraint
+          required: true
+          schema:
+            $ref: '#/definitions/createConstraintRequest'
+      responses:
+        '200':
+          description: the constraint created
+          schema:
+            $ref: '#/definitions/constraint'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/segments/{segmentID}/constraints/{constraintID}':
+    put:
+      tags:
+        - constraint
+      operationId: putConstraint
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: segmentID
+          description: numeric ID of the segment
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: constraintID
+          description: numeric ID of the constraint
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: body
+          description: create a constraint
+          required: true
+          schema:
+            $ref: '#/definitions/createConstraintRequest'
+      responses:
+        '200':
+          description: constraint just updated
+          schema:
+            $ref: '#/definitions/constraint'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    delete:
+      tags:
+        - constraint
+      operationId: deleteConstraint
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: segmentID
+          description: numeric ID of the segment
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: constraintID
+          description: numeric ID of the constraint
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: deleted
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/segments/{segmentID}/distributions':
+    get:
+      tags:
+        - distribution
+      operationId: findDistributions
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: segmentID
+          description: numeric ID of the segment
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: distribution under the segment
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/distribution'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    put:
+      tags:
+        - distribution
+      operationId: putDistributions
+      description: replace the distribution with the new setting
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: path
+          name: segmentID
+          description: numeric ID of the segment
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: body
+          description: array of distributions
+          required: true
+          schema:
+            $ref: '#/definitions/putDistributionsRequest'
+      responses:
+        '200':
+          description: distribution under the segment
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/distribution'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  '/flags/{flagID}/snapshots':
+    get:
+      tags:
+        - flag
+      operationId: getFlagSnapshots
+      parameters:
+        - in: path
+          name: flagID
+          description: numeric ID of the flag to get
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: returns the flag snapshots
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/flagSnapshot'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  /flags/entity_types:
+    get:
+      tags:
+        - flag
+      operationId: getFlagEntityTypes
+      responses:
+        '200':
+          description: returns all the FlagEntityTypes
+          schema:
+            type: array
+            items:
+              type: string
+              minLength: 1
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  /tags:
+    get:
+      tags:
+        - tag
+      operationId: findAllTags
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          format: int64
+          description: the numbers of tags to return
+        - in: query
+          name: offset
+          type: integer
+          format: int64
+          description: >-
+            return tags given the offset, it should usually set together with
+            limit
+        - in: query
+          name: value_like
+          type: string
+          description: return tags partially matching given value
+      responses:
+        '200':
+          description: list all the tags
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/tag'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  /evaluation:
+    post:
+      tags:
+        - evaluation
+      operationId: postEvaluation
+      parameters:
+        - in: body
+          name: body
+          description: evalution context
+          required: true
+          schema:
+            $ref: '#/definitions/evalContext'
+      responses:
+        '200':
+          description: evaluation result
+          schema:
+            $ref: '#/definitions/evalResult'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  /evaluation/batch:
+    post:
+      tags:
+        - evaluation
+      operationId: postEvaluationBatch
+      parameters:
+        - in: body
+          name: body
+          description: evalution batch request
+          required: true
+          schema:
+            $ref: '#/definitions/evaluationBatchRequest'
+      responses:
+        '200':
+          description: evaluation batch result
+          schema:
+            $ref: '#/definitions/evaluationBatchResponse'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  /health:
+    get:
+      tags:
+        - health
+      operationId: getHealth
+      description: Check if Flagr is healthy
+      responses:
+        '200':
+          description: status of health check
+          schema:
+            $ref: '#/definitions/health'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  /export/sqlite:
+    get:
+      tags:
+        - export
+      operationId: getExportSqlite
+      parameters:
+        - in: query
+          name: exclude_snapshots
+          type: boolean
+          description: >
+            export without snapshots data - useful for smaller db without
+            snapshots
+      description: >-
+        Export sqlite3 format of the db dump, which is converted from the main
+        database.
+      produces:
+        - application/octet-stream
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: file
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  /export/eval_cache/json:
+    get:
+      tags:
+        - export
+      operationId: getExportEvalCacheJSON
+      description: Export JSON format of the eval cache dump
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+definitions:
+  flag:
+    type: object
+    required:
+      - description
+      - enabled
+      - dataRecordsEnabled
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+        readOnly: true
+      key:
+        description: unique key representation of the flag
+        type: string
+        minLength: 1
+      description:
+        type: string
+        minLength: 1
+      enabled:
+        type: boolean
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/tag'
+      segments:
+        type: array
+        items:
+          $ref: '#/definitions/segment'
+      variants:
+        type: array
+        items:
+          $ref: '#/definitions/variant'
+      dataRecordsEnabled:
+        description: >-
+          enabled data records will get data logging in the metrics pipeline,
+          for example, kafka.
+        type: boolean
+      entityType:
+        description: >-
+          it will override the entityType in the evaluation logs if it's not
+          empty
+        type: string
+      notes:
+        description: flag usage details in markdown format
+        type: string
+      createdBy:
+        type: string
+      updatedBy:
+        type: string
+      updatedAt:
+        type: string
+        format: date-time
+  createFlagRequest:
+    type: object
+    required:
+      - description
+    properties:
+      description:
+        type: string
+        minLength: 1
+      key:
+        description: unique key representation of the flag
+        type: string
+      template:
+        description: template for flag creation
+        type: string
+  putFlagRequest:
+    type: object
+    properties:
+      description:
+        type: string
+        minLength: 1
+        x-nullable: true
+      dataRecordsEnabled:
+        type: boolean
+        description: >-
+          enabled data records will get data logging in the metrics pipeline,
+          for example, kafka.
+        x-nullable: true
+      entityType:
+        description: it will overwrite entityType into evaluation logs if it's not empty
+        type: string
+        x-nullable: true
+      enabled:
+        type: boolean
+        x-nullable: true
+      key:
+        type: string
+        x-nullable: true
+      notes:
+        type: string
+        x-nullable: true
+  setFlagEnabledRequest:
+    type: object
+    required:
+      - enabled
+    properties:
+      enabled:
+        type: boolean
+  flagSnapshot:
+    type: object
+    required:
+      - id
+      - flag
+      - updatedAt
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      updatedBy:
+        type: string
+      flag:
+        $ref: '#/definitions/flag'
+      updatedAt:
+        type: string
+        minLength: 1
+  tag:
+    type: object
+    required:
+      - value
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+        readOnly: true
+      value:
+        type: string
+        minLength: 1
+  createTagRequest:
+    type: object
+    required:
+      - value
+    properties:
+      value:
+        type: string
+        minLength: 1
+  segment:
+    type: object
+    required:
+      - description
+      - rank
+      - rolloutPercent
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+        readOnly: true
+      description:
+        type: string
+        minLength: 1
+      constraints:
+        type: array
+        items:
+          $ref: '#/definitions/constraint'
+      distributions:
+        type: array
+        items:
+          $ref: '#/definitions/distribution'
+      rank:
+        type: integer
+        format: int64
+        minimum: 0
+      rolloutPercent:
+        type: integer
+        format: int64
+        minimum: 0
+        maximum: 100
+  createSegmentRequest:
+    type: object
+    required:
+      - description
+      - rolloutPercent
+    properties:
+      description:
+        type: string
+        minLength: 1
+      rolloutPercent:
+        type: integer
+        format: int64
+        minimum: 0
+        maximum: 100
+  putSegmentRequest:
+    type: object
+    required:
+      - description
+      - rolloutPercent
+    properties:
+      description:
+        type: string
+        minLength: 1
+      rolloutPercent:
+        type: integer
+        format: int64
+        minimum: 0
+        maximum: 100
+  putSegmentReorderRequest:
+    type: object
+    required:
+      - segmentIDs
+    properties:
+      segmentIDs:
+        type: array
+        minItems: 1
+        items:
+          type: integer
+          format: int64
+          minimum: 1
+  variant:
+    type: object
+    required:
+      - key
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+        readOnly: true
+      key:
+        type: string
+        minLength: 1
+      attachment:
+        type: object
+  createVariantRequest:
+    type: object
+    required:
+      - key
+    properties:
+      key:
+        type: string
+        minLength: 1
+      attachment:
+        type: object
+  putVariantRequest:
+    type: object
+    required:
+      - key
+    properties:
+      key:
+        type: string
+        minLength: 1
+      attachment:
+        type: object
+  constraint:
+    type: object
+    required:
+      - property
+      - operator
+      - value
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+        readOnly: true
+      property:
+        type: string
+        minLength: 1
+      operator:
+        type: string
+        minLength: 1
+        enum:
+          - EQ
+          - NEQ
+          - LT
+          - LTE
+          - GT
+          - GTE
+          - EREG
+          - NEREG
+          - IN
+          - NOTIN
+          - CONTAINS
+          - NOTCONTAINS
+      value:
+        type: string
+        minLength: 1
+  createConstraintRequest:
+    type: object
+    required:
+      - property
+      - operator
+      - value
+    properties:
+      property:
+        type: string
+        minLength: 1
+      operator:
+        type: string
+        minLength: 1
+      value:
+        type: string
+        minLength: 1
+  distribution:
+    type: object
+    required:
+      - percent
+      - variantID
+      - variantKey
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+        readOnly: true
+      percent:
+        type: integer
+        format: int64
+        minimum: 0
+        maximum: 100
+      variantKey:
+        type: string
+        minLength: 1
+      variantID:
+        type: integer
+        format: int64
+        minimum: 1
+  putDistributionsRequest:
+    type: object
+    required:
+      - distributions
+    properties:
+      distributions:
+        type: array
+        items:
+          $ref: '#/definitions/distribution'
+  evalContext:
+    type: object
+    properties:
+      entityID:
+        type: string
+        description: >-
+          entityID is used to deterministically at random to evaluate the flag
+          result. If it's empty, flagr will randomly generate one.
+      entityType:
+        type: string
+      entityContext:
+        type: object
+      enableDebug:
+        type: boolean
+      flagID:
+        description: flagID
+        type: integer
+        format: int64
+        minimum: 1
+      flagKey:
+        description: >-
+          flagKey. flagID or flagKey will resolve to the same flag. Either
+          works.
+        type: string
+      flagTags:
+        description: flagTags. flagTags looks up flags by tag. Either works.
+        type: array
+        x-omitempty: true
+        items:
+          type: string
+      flagTagsOperator:
+        description: >-
+          determine how flagTags is used to filter flags to be evaluated. OR
+          extends the evaluation to those which contains at least one of the
+          provided flagTags or AND limit the evaluation to those which contains
+          all the flagTags.
+        type: string
+        enum:
+          - ANY
+          - ALL
+        default: ANY
+  evalResult:
+    type: object
+    properties:
+      flagID:
+        type: integer
+        format: int64
+      flagKey:
+        type: string
+      flagSnapshotID:
+        type: integer
+        format: int64
+      segmentID:
+        type: integer
+        format: int64
+      variantID:
+        type: integer
+        format: int64
+      variantKey:
+        type: string
+      variantAttachment:
+        type: object
+      evalContext:
+        $ref: '#/definitions/evalContext'
+      timestamp:
+        type: string
+      evalDebugLog:
+        $ref: '#/definitions/evalDebugLog'
+  evalDebugLog:
+    type: object
+    properties:
+      segmentDebugLogs:
+        type: array
+        items:
+          $ref: '#/definitions/segmentDebugLog'
+      msg:
+        type: string
+  segmentDebugLog:
+    type: object
+    properties:
+      segmentID:
+        type: integer
+        format: int64
+        minimum: 1
+      msg:
+        type: string
+  evaluationEntity:
+    type: object
+    properties:
+      entityID:
+        type: string
+      entityType:
+        type: string
+      entityContext:
+        type: object
+  evaluationBatchRequest:
+    type: object
+    required:
+      - entities
+    properties:
+      entities:
+        type: array
+        items:
+          $ref: '#/definitions/evaluationEntity'
+        minItems: 1
+      enableDebug:
+        type: boolean
+      flagIDs:
+        description: flagIDs
+        type: array
+        items:
+          type: integer
+          format: int64
+          minimum: 1
+        minItems: 1
+      flagKeys:
+        description: >-
+          flagKeys. Either flagIDs, flagKeys or flagTags works. If pass in
+          multiples, Flagr may return duplicate results.
+        type: array
+        items:
+          type: string
+          minLength: 1
+        minItems: 1
+      flagTags:
+        description: >-
+          flagTags. Either flagIDs, flagKeys or flagTags works. If pass in
+          multiples, Flagr may return duplicate results.
+        type: array
+        items:
+          type: string
+          minLength: 1
+        minItems: 1
+      flagTagsOperator:
+        description: >-
+          determine how flagTags is used to filter flags to be evaluated. OR
+          extends the evaluation to those which contains at least one of the
+          provided flagTags or AND limit the evaluation to those which contains
+          all the flagTags.
+        type: string
+        enum:
+          - ANY
+          - ALL
+        default: ANY
+  evaluationBatchResponse:
+    type: object
+    required:
+      - evaluationResults
+    properties:
+      evaluationResults:
+        type: array
+        items:
+          $ref: '#/definitions/evalResult'
+  health:
+    type: object
+    properties:
+      status:
+        type: string
+  error:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+        minLength: 1
