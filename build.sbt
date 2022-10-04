@@ -1,26 +1,21 @@
+import Dependencies._
+
 version := "1.0.0"
-name := "swagger-scala-client"
-organization := "io.swagger"
-scalaVersion := "2.11.12"
+name := "scalaflagr"
+organization := "com.crystalxyen.scalaflagr"
+scalaVersion := "2.12.13"
 
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.9.2",
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.9.2",
-  "com.sun.jersey" % "jersey-core" % "1.19.4",
-  "com.sun.jersey" % "jersey-client" % "1.19.4",
-  "com.sun.jersey.contribs" % "jersey-multipart" % "1.19.4",
-  "org.jfarcand" % "jersey-ahc-client" % "1.0.5",
-  "io.swagger" % "swagger-core" % "1.5.8",
-  "joda-time" % "joda-time" % "2.9.9",
-  "org.joda" % "joda-convert" % "1.9.2",
-  "org.scalatest" %% "scalatest" % "3.0.4" % "test",
-  "junit" % "junit" % "4.12" % "test",
-  "com.wordnik.swagger" %% "swagger-async-httpclient" % "0.3.5"
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.9.2"
 )
-
+libraryDependencies ++= Dependencies.test.map(_ % Test)
+libraryDependencies ++= Dependencies.circe ++ Dependencies.sttp ++ Dependencies.log ++ Dependencies.config
+libraryDependencies ++= Dependencies.cats ++ Dependencies.catsEffect
+libraryDependencies += "com.desmondyeung.hashing" %% "scala-hashing" % "0.1.0"
 resolvers ++= Seq(
   Resolver.mavenLocal
-)
+) ++ thirdPartyRepos
 
 scalacOptions := Seq(
   "-unchecked",
@@ -28,5 +23,32 @@ scalacOptions := Seq(
   "-feature"
 )
 
-publishArtifact in (Compile, packageDoc) := false
+lazy val core = (project in file("scalaflagr-core"))
+  .settings(
+    resolvers ++= Seq(
+      Resolver.mavenLocal
+    ) ++ thirdPartyRepos
+  )
+  .settings(
+    libraryDependencies ++= Dependencies.test
+      .map(_ % Test) ++ Dependencies.circe ++ Dependencies.log ++ Dependencies.config
+  )
+  .settings(libraryDependencies += "com.desmondyeung.hashing" %% "scala-hashing" % "0.1.0")
 
+lazy val sttpClient = (project in file("scalaflagr-sttp-client"))
+  .settings(
+    resolvers ++= Seq(
+      Resolver.mavenLocal
+    ) ++ thirdPartyRepos
+  )
+  .settings(libraryDependencies ++= Dependencies.sttp)
+  .dependsOn(core)
+
+lazy val catsUtil = (project in file("scalaflagr-cats-util"))
+  .settings(
+    resolvers ++= Seq(
+      Resolver.mavenLocal
+    ) ++ thirdPartyRepos
+  )
+  .settings(libraryDependencies ++= Dependencies.cats ++ Dependencies.catsEffect)
+  .dependsOn(core)
