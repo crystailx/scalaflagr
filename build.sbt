@@ -5,17 +5,7 @@ name := "scalaflagr"
 organization := "com.crystalxyen.scalaflagr"
 scalaVersion := "2.12.13"
 
-libraryDependencies ++= Seq(
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.9.2",
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.9.2"
-)
-libraryDependencies ++= Dependencies.test.map(_ % Test)
-libraryDependencies ++= Dependencies.circe ++ Dependencies.sttp ++ Dependencies.log ++ Dependencies.config
-libraryDependencies ++= Dependencies.cats ++ Dependencies.catsEffect
-libraryDependencies += "com.desmondyeung.hashing" %% "scala-hashing" % "0.1.0"
-resolvers ++= Seq(
-  Resolver.mavenLocal
-) ++ thirdPartyRepos
+ThisBuild / libraryDependencies ++= Dependencies.test.map(_ % Test)
 
 scalacOptions := Seq(
   "-unchecked",
