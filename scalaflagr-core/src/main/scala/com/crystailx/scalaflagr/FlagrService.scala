@@ -14,7 +14,7 @@ import com.crystailx.scalaflagr.effect.{
 import com.crystailx.scalaflagr.json.{ Decoder, Encoder }
 import com.typesafe.scalalogging.LazyLogging
 
-import scala.language.{ higherKinds, postfixOps }
+import scala.language.postfixOps
 
 class FlagrService[K, F[_]](client: EvaluationClient[F])(implicit
   keyCreator: CacheKeyCreator[K],

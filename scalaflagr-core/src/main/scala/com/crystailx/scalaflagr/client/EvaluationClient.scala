@@ -9,7 +9,6 @@ import com.crystailx.scalaflagr.data.{
 import com.crystailx.scalaflagr.effect.Functor
 import com.crystailx.scalaflagr.json.{ Decoder, Encoder }
 
-import scala.language.higherKinds
 
 trait EvaluationClient[F[_]] extends HttpClient[F] {
   val config: FlagrConfig

@@ -2,7 +2,6 @@ package com.crystailx.scalaflagr.cache
 
 import com.crystailx.scalaflagr.data.EvalResult
 
-import scala.language.higherKinds
 
 trait Cacher[K, F[_]] {
   def set(key: K, evalResult: EvalResult): F[Unit]

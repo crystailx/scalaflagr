@@ -2,9 +2,6 @@ package com.crystailx.scalaflagr.cache
 
 import com.crystailx.scalaflagr.cache.Cachers._
 import com.crystailx.scalaflagr.effect.Applicative
-
-import scala.language.higherKinds
-
 trait Cachers extends InMemoryCacher with NoCacheCacher {}
 
 object Cachers {

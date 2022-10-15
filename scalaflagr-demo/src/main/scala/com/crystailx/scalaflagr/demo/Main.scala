@@ -6,15 +6,17 @@ import com.crystailx.scalaflagr.client.{ FlagrConfig, SttpEvaluationClient }
 import com.crystailx.scalaflagr.json.circe._
 import com.crystailx.scalaflagr.syntax._
 import com.softwaremill.sttp.akkahttp.AkkaHttpBackend
+import com.typesafe.scalalogging.LazyLogging
+import io.circe.generic.semiauto.deriveCodec
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
-object Main {
+object Main extends LazyLogging {
 
   case class UserInfo(country: String)
-  implicit val userInfoCodec: io.circe.Codec[UserInfo] = io.circe.derivation.deriveCodec
+  implicit val userInfoCodec: io.circe.Codec[UserInfo] = deriveCodec
 
   def main(args: Array[String]): Unit = {
     implicit val backend = AkkaHttpBackend.apply()

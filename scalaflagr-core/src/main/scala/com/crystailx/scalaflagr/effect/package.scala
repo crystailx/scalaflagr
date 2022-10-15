@@ -2,7 +2,6 @@ package com.crystailx.scalaflagr
 
 import com.crystailx.scalaflagr.syntax.EffectSyntax
 
-import scala.language.higherKinds
 
 package object effect {
 

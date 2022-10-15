@@ -3,7 +3,6 @@ package com.crystailx.scalaflagr.cache
 import com.crystailx.scalaflagr.data.EvalResult
 import com.crystailx.scalaflagr.effect.Applicative
 
-import scala.language.higherKinds
 
 class NoCache[K, F[_]](implicit applicative: Applicative[F]) extends Cacher[K, F] {
 

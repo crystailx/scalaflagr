@@ -4,7 +4,8 @@ import com.crystailx.scalaflagr.cache.CacheKeyCreators.{
   EmptyCacheKeyCreator,
   SimpleCacheKeyCreator
 }
-import com.desmondyeung.hashing.XxHash64
+
+import scala.util.hashing.MurmurHash3
 
 trait CacheKeyCreators extends EmptyCacheKeyCreator with SimpleCacheKeyCreator {}
 
@@ -21,7 +22,7 @@ object CacheKeyCreators {
     implicit val simpleCacheKey: CacheKeyCreator[String] =
       (flagKey: String, entityID: String, entityType: String, entityContext: Option[String]) => {
         val bytes = entityContext.fold(Array.empty[Byte])(_.getBytes)
-        val hashedContext = XxHash64.hashByteArray(bytes, 0L).toString
+        val hashedContext = MurmurHash3.bytesHash(bytes)
         s"$entityType-$entityID-$flagKey-$hashedContext"
       }
   }
