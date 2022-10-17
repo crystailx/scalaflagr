@@ -1,0 +1,17 @@
+<Configuration>
+    <Appenders>
+
+        <Console name="Out">
+            <PatternLayout pattern="[%d{HH:mm:ss.SSS}][%highlight{%-5level}][%logger{36}] - %msg%n"/>
+        </Console>
+
+    </Appenders>
+    <Loggers>
+        <Logger name="com.crystailx.scalaflagr" level="info" additivity="false">
+            <AppenderRef ref="Out"/>
+        </Logger>
+        <Root level="error">
+            <AppenderRef ref="Out"/>
+        </Root>
+    </Loggers>
+</Configuration>
