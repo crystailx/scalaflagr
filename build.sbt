@@ -17,16 +17,10 @@ scalacOptions := Seq(
   "-feature"
 )
 
-def module(dir: String): Project = Project(dir, file(dir)) // (project in file(dir))
-  .settings(
-    crossScalaVersions := supportedScalaVersions,
-    libraryDependencies ++= Dependencies.log ++ Dependencies.test.map(_ % Test)
-  )
-
 lazy val moduleSettings = Seq(
   crossScalaVersions := supportedScalaVersions,
   libraryDependencies ++= Dependencies.test
-    .map(_ % Test) ++ Dependencies.log //++ Dependencies.config
+    .map(_ % Test) ++ Dependencies.log
 )
 
 lazy val core = (project in file("scalaflagr-core"))

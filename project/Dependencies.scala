@@ -2,14 +2,6 @@ import sbt._
 
 object Dependencies {
 
-  val thirdPartyRepos = Seq(
-    "confluent-release" at "https://packages.confluent.io/maven/",
-    Resolver.bintrayRepo("cakesolutions", "maven"),
-    "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-    "Apache Staging" at "https://repository.apache.org/content/repositories/staging/",
-    "jitpack" at "https://jitpack.io"
-  )
-
   private val log4jVersion = "2.19.0"
   private val scalaLoggingVersion = "3.9.5"
   private val circeVersion = "0.14.3"
@@ -51,13 +43,5 @@ object Dependencies {
       "org.mock-server" % "mockserver-netty" % "5.14.0",
       "org.mockito" % "mockito-core" % "4.8.0",
       "org.mockito" %% "mockito-scala" % "1.17.12"
-    ) ++ cats /*.map(
-      _ excludeAll (
-        ExclusionRule("org.slf4j", "slf4j-log4j12"),
-        ExclusionRule("org.typelevel", "cats-core_2.12"),
-        ExclusionRule("com.twitter", "finagle-http_2.12"),
-        ExclusionRule("io.netty", "netty-transport-native-epoll"),
-        ExclusionRule("io.catbird")
-      )
-    ) */
+    )
 }
