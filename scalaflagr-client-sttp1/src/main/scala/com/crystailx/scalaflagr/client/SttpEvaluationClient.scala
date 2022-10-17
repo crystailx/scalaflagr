@@ -4,8 +4,7 @@ import com.softwaremill.sttp._
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-class SttpEvaluationClient(override val config: FlagrConfig)(
-  implicit
+class SttpEvaluationClient(override val config: FlagrConfig)(implicit
   sttpBackend: SttpBackend[Future, Nothing],
   ec: ExecutionContext
 ) extends EvaluationClient[Future] {

@@ -66,7 +66,7 @@ class FlagrService[K, F[_]](client: EvaluationClient[F])(implicit
         .flatMap(_ => eval.toVariant)
     }
 
-  def getUnsafeVariant[T](context: FlagrContext): F[Variant] =
+  def getUnsafeVariant(context: FlagrContext): F[Variant] =
     getVariant(context).map(
       _.getOrElse(throw new Exception("No matched variant"))
     )

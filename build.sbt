@@ -32,12 +32,12 @@ lazy val moduleSettings = Seq(
 lazy val core = (project in file("scalaflagr-core"))
   .settings(moduleSettings)
 
-lazy val sttpClient = (project in file("scalaflagr-sttp-client"))
+lazy val sttp1Client = (project in file("scalaflagr-client-sttp1"))
   .settings(moduleSettings)
   .settings(libraryDependencies ++= Dependencies.sttp1)
   .dependsOn(core)
 
-lazy val catsUtil = (project in file("scalaflagr-cats-util"))
+lazy val catsEffect = (project in file("scalaflagr-effect-cats"))
   .settings(moduleSettings)
   .settings(libraryDependencies ++= Dependencies.cats)
   .dependsOn(core)
@@ -53,7 +53,7 @@ lazy val demo = (project in file("scalaflagr-demo"))
     exportToInternal := TrackLevel.NoTracking,
     libraryDependencies ++= Dependencies.sttp1Akka
   )
-  .dependsOn(core, sttpClient, jsonCirce, catsUtil)
+  .dependsOn(core, sttp1Client, jsonCirce, catsEffect)
 
 lazy val root = (project in file("."))
   .settings(
@@ -61,7 +61,7 @@ lazy val root = (project in file("."))
     publish / skip := true,
     update / aggregate := false
   )
-  .aggregate(core, sttpClient, catsUtil, jsonCirce, demo)
+  .aggregate(core, sttp1Client, catsEffect, jsonCirce, demo)
 
 scmInfo := Some(
   ScmInfo(
