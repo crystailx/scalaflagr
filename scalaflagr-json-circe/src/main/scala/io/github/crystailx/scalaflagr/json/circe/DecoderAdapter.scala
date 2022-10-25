@@ -1,6 +1,11 @@
 package io.github.crystailx.scalaflagr.json.circe
 
-import io.github.crystailx.scalaflagr.data.{ EvalContext, EvalDebugLog, EvalResult, SegmentDebugLog }
+import io.github.crystailx.scalaflagr.data.{
+  EvalContext,
+  EvalDebugLog,
+  EvalResult,
+  SegmentDebugLog
+}
 import io.github.crystailx.scalaflagr.json.Decoder
 import io.circe.generic.semiauto._
 import io.circe.{ parser, Decoder => CirceDecoder }

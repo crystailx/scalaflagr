@@ -1,6 +1,5 @@
 package io.github.crystailx.scalaflagr.effect
 
-
 trait Applicative[F[_]] {
   def pure[A](value: A): F[A]
 }
