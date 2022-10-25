@@ -35,7 +35,7 @@ class FlagrServiceSpec extends FixtureAnyFlatSpec with Matchers with LazyLogging
       }
     }
 
-    implicit val cacher: Cacher[String, Option] = new Cacher[String, Option] {
+    val cacher: Cacher[String, Option] = new Cacher[String, Option] {
       private val cache: mutable.HashMap[String, EvalResult] = mutable.HashMap.empty
 
       override def set(key: String, evalResult: EvalResult): Option[Unit] = {
@@ -96,19 +96,19 @@ class FlagrServiceSpec extends FixtureAnyFlatSpec with Matchers with LazyLogging
 
   it must "create new flagr service with implicits" in { f =>
     import f._
-    noException must be thrownBy new FlagrService(client)
+    noException must be thrownBy new FlagrService(client, cacher)
   }
 
   it must "check flag is enabled" in { f =>
     import f._
-    val service = new FlagrService(client)
+    val service = new FlagrService(client, cacher)
     service.isEnabled(BasicContext("matched")).value mustBe true
     service.isEnabled(BasicContext("unmatched")).value mustBe false
   }
 
   it must "get matched flag variants" in { f =>
     import f._
-    val service = new FlagrService(client)
+    val service = new FlagrService(client, cacher)
     an[Exception] must be thrownBy service.getUnsafeVariant(BasicContext("matched"))
   }
 

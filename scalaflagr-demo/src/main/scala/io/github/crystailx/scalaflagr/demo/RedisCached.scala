@@ -24,10 +24,9 @@ object RedisCached extends LazyLogging {
   implicit val userInfoCodec: io.circe.Codec[UserInfo] = deriveCodec
 
   def main(args: Array[String]): Unit = {
-    implicit val cacher: Cacher[String, Future] = new RedisCache(new RedisCluster())
     implicit val backend: SttpBackend[Future, Source[ByteString, Any]] = AkkaHttpBackend.apply()
     val client = new SttpEvaluationClient(FlagrConfig())
-    val service = new FlagrService(client)
+    val service = new FlagrService[String, Future](client, new RedisCache(new RedisCluster()))
     val flagrContext = EntityContext("flag-key", entityContext = UserInfo("TW"))
     val result = service.isEnabled(flagrContext)
     println(Await.result(result, Duration.Inf))

@@ -16,9 +16,8 @@ import com.typesafe.scalalogging.LazyLogging
 
 import scala.language.postfixOps
 
-class FlagrService[K, F[_]](client: EvaluationClient[F])(implicit
+class FlagrService[K, F[_]](client: EvaluationClient[F], cacher: Cacher[K, F])(implicit
   keyCreator: CacheKeyCreator[K],
-  cacher: Cacher[K, F],
   functor: Functor[F],
   monad: Monad[F],
   applicative: Applicative[F],

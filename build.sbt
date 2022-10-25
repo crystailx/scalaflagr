@@ -28,6 +28,13 @@ lazy val moduleSettings = Seq(
     .map(_ % Test) ++ Dependencies.log
 )
 
+lazy val noPublishSettings = Seq(
+  publish / skip := true,
+  publish := {},
+  publishLocal := {},
+  publishSigned := {}
+)
+
 lazy val core = (project in file("scalaflagr-core"))
   .settings(name := "scalaflagr-core")
   .settings(moduleSettings)
@@ -59,24 +66,17 @@ lazy val redisCache = (project in file("scalaflagr-cache-scredis"))
 lazy val demo = (project in file("scalaflagr-demo"))
   .settings(name := "scalaflagr-demo")
   .settings(moduleSettings)
+  .settings(noPublishSettings)
   .settings(
-    publish / skip := true,
-    update / aggregate := false,
-    publish := {},
-    publishLocal := {},
-    publishSigned := {},
     exportToInternal := TrackLevel.NoTracking,
     libraryDependencies ++= Dependencies.sttp1Akka
   )
   .dependsOn(core, sttp1Client, jsonCirce, catsEffect, redisCache)
 
 lazy val root = (project in file("."))
+  .settings(noPublishSettings)
   .settings(
     crossScalaVersions := Nil,
-    publish / skip := true,
-    update / aggregate := false,
-    publish := {},
-    publishLocal := {},
-    publishSigned := {}
+    update / aggregate := false
   )
   .aggregate(core, sttp1Client, catsEffect, jsonCirce, redisCache, demo)
