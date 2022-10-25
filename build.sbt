@@ -1,15 +1,20 @@
 import Dependencies._
+import com.jsuereth.sbtpgp.PgpKeys.publishSigned
 
 lazy val scala213 = "2.13.10"
 lazy val scala212 = "2.12.17"
 lazy val scala211 = "2.11.12"
-lazy val supportedScalaVersions = List(scala213, scala212, scala211)
-ThisBuild / organization := "com.crystailx.scalaflagr"
-ThisBuild / version := "0.1.0-SNAPSHOT"
+lazy val supportedScalaVersions = Seq(scala213, scala212 /*, scala211*/ )
+ThisBuild / organization := "io.github.crystailx"
+ThisBuild / version := "0.9.1"
 ThisBuild / scalaVersion := scala213
 ThisBuild / trackInternalDependencies := TrackLevel.TrackAlways
 //ThisBuild / exportJars := true
 ThisBuild / libraryDependencies ++= Dependencies.test.map(_ % Test)
+
+// sonatype publish
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+ThisBuild / publishTo := sonatypePublishToBundle.value
 
 scalacOptions := Seq(
   "-unchecked",
@@ -24,42 +29,54 @@ lazy val moduleSettings = Seq(
 )
 
 lazy val core = (project in file("scalaflagr-core"))
+  .settings(name := "scalaflagr-core")
   .settings(moduleSettings)
 
 lazy val sttp1Client = (project in file("scalaflagr-client-sttp1"))
+  .settings(name := "scalaflagr-client-sttp1")
   .settings(moduleSettings)
   .settings(libraryDependencies ++= Dependencies.sttp1)
   .dependsOn(core)
 
 lazy val catsEffect = (project in file("scalaflagr-effect-cats"))
+  .settings(name := "scalaflagr-effect-cats")
   .settings(moduleSettings)
   .settings(libraryDependencies ++= Dependencies.cats)
   .dependsOn(core)
 
 lazy val jsonCirce = (project in file("scalaflagr-json-circe"))
+  .settings(name := "scalaflagr-json-circe")
   .settings(moduleSettings)
   .settings(libraryDependencies ++= Dependencies.circe)
   .dependsOn(core)
 
+lazy val redisCache = (project in file("scalaflagr-cache-scredis"))
+  .settings(name := "scalaflagr-cache-scredis")
+  .settings(moduleSettings)
+  .settings(libraryDependencies ++= Dependencies.redis)
+  .dependsOn(core)
+
 lazy val demo = (project in file("scalaflagr-demo"))
+  .settings(name := "scalaflagr-demo")
   .settings(moduleSettings)
   .settings(
+    publish / skip := true,
+    update / aggregate := false,
+    publish := {},
+    publishLocal := {},
+    publishSigned := {},
     exportToInternal := TrackLevel.NoTracking,
     libraryDependencies ++= Dependencies.sttp1Akka
   )
-  .dependsOn(core, sttp1Client, jsonCirce, catsEffect)
+  .dependsOn(core, sttp1Client, jsonCirce, catsEffect, redisCache)
 
 lazy val root = (project in file("."))
   .settings(
     crossScalaVersions := Nil,
     publish / skip := true,
-    update / aggregate := false
+    update / aggregate := false,
+    publish := {},
+    publishLocal := {},
+    publishSigned := {}
   )
-  .aggregate(core, sttp1Client, catsEffect, jsonCirce, demo)
-
-scmInfo := Some(
-  ScmInfo(
-    url("https://github.com/crystailx/scalaflagr"),
-    "scm:git:git@github.com:crystailx/scalaflagr.git"
-  )
-)
+  .aggregate(core, sttp1Client, catsEffect, jsonCirce, redisCache, demo)
