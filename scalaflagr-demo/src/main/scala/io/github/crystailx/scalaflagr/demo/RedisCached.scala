@@ -10,7 +10,11 @@ import io.github.crystailx.scalaflagr.FlagrService
 import io.github.crystailx.scalaflagr.FlagrService.EntityContext
 import io.github.crystailx.scalaflagr.cache._
 import io.github.crystailx.scalaflagr.cache.redis._
-import io.github.crystailx.scalaflagr.client.{ FlagrConfig, SttpEvaluationClient }
+import io.github.crystailx.scalaflagr.client.{
+  FlagrConfig,
+  SttpEvaluationClient,
+  SttpManagerClient
+}
 import io.github.crystailx.scalaflagr.json.circe._
 import scredis.RedisCluster
 
@@ -30,5 +34,9 @@ object RedisCached extends LazyLogging {
     val flagrContext = EntityContext("flag-key", entityContext = UserInfo("TW"))
     val result = service.isEnabled(flagrContext)
     println(Await.result(result, Duration.Inf))
+
+    val manager = new SttpManagerClient(FlagrConfig())
+    val result2 = manager.flag(1L).map(_.key)
+    println(Await.result(result2, Duration.Inf))
   }
 }
