@@ -3,9 +3,14 @@ package io.github.crystailx.scalaflagr.data
 import io.github.crystailx.scalaflagr.data.Variant.VariantAttachment
 import io.github.crystailx.scalaflagr.json.Decoder
 
-case class Variant(variantKey: String, private val rawValue: Option[String]) {
+case class Variant(
+  id: Option[Long] = None,
+  key: String,
+//  attachment: Option[Any] = None,
+  private val rawValue: Option[String]
+) {
 
-  def attachments[T](implicit decoder: Decoder[VariantAttachment[T]]): Option[T] =
+  def attachment[T](implicit decoder: Decoder[VariantAttachment[T]]): Option[T] =
     rawValue.flatMap(s => decoder.decodeSafe(s).toOption.flatMap(_.variantAttachment))
 }
 

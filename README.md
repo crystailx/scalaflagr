@@ -13,3 +13,5 @@ val service = new FlagrService(client)
 val flagrContext = EntityContext("flag-key", entityContext = UserInfo("TW"))
 val result = service.isEnabled(flagrContext)
 ```
+
+Export API is not supported

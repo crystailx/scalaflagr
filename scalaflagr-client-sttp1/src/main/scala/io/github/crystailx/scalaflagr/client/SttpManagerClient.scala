@@ -5,9 +5,9 @@ import io.github.crystailx.scalaflagr.effect.Functor
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-class SttpEvaluationClient(override val config: FlagrConfig)(implicit
+class SttpManagerClient(override protected val config: FlagrConfig)(implicit
   override protected val functor: Functor[Future],
   override protected val sttpBackend: SttpBackend[Future, Nothing],
   override protected val ec: ExecutionContext
 ) extends SttpHttpClient
-    with EvaluationClient[Future]
+    with ManagerClient[Future]
