@@ -57,6 +57,18 @@ lazy val jsonCirce = (project in file("scalaflagr-json-circe"))
   .settings(libraryDependencies ++= Dependencies.circe)
   .dependsOn(core)
 
+lazy val jsonPlay = (project in file("scalaflagr-json-play"))
+  .settings(name := "scalaflagr-json-play")
+  .settings(moduleSettings)
+  .settings(libraryDependencies ++= Dependencies.playJson)
+  .dependsOn(core)
+
+lazy val jsonJackson = (project in file("scalaflagr-json-jackson"))
+  .settings(name := "scalaflagr-json-jackson")
+  .settings(moduleSettings)
+  .settings(libraryDependencies ++= Dependencies.jackson)
+  .dependsOn(core)
+
 lazy val redisCache = (project in file("scalaflagr-cache-scredis"))
   .settings(name := "scalaflagr-cache-scredis")
   .settings(moduleSettings)
@@ -71,7 +83,7 @@ lazy val demo = (project in file("scalaflagr-demo"))
     exportToInternal := TrackLevel.NoTracking,
     libraryDependencies ++= Dependencies.sttp1Akka
   )
-  .dependsOn(core, sttp1Client, jsonCirce, catsEffect, redisCache)
+  .dependsOn(core, sttp1Client, jsonCirce, jsonPlay, jsonJackson, catsEffect, redisCache)
 
 lazy val root = (project in file("."))
   .settings(noPublishSettings)
@@ -79,4 +91,4 @@ lazy val root = (project in file("."))
     crossScalaVersions := Nil,
     update / aggregate := false
   )
-  .aggregate(core, sttp1Client, catsEffect, jsonCirce, redisCache, demo)
+  .aggregate(core, sttp1Client, catsEffect, jsonCirce, jsonPlay, jsonJackson, redisCache, demo)

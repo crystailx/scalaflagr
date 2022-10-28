@@ -1,10 +1,15 @@
 package io.github.crystailx.scalaflagr.json.circe
 
 import com.typesafe.scalalogging.LazyLogging
-import org.scalatest.flatspec.AnyFlatSpec
-import io.circe.{ DecodingFailure, Decoder => CirceDecoder, Encoder => CirceEncoder }
+import io.circe.generic.semiauto.{ deriveCodec, deriveDecoder, deriveEncoder }
+import io.circe.{
+  DecodingFailure,
+  Codec => CirceCodec,
+  Decoder => CirceDecoder,
+  Encoder => CirceEncoder
+}
 import io.github.crystailx.scalaflagr.json.{ Decoder, Encoder }
-import io.circe.generic.semiauto.{ deriveDecoder, deriveEncoder }
+import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 
 class CirceAdapterSpec extends AnyFlatSpec with LazyLogging with Matchers {
@@ -15,19 +20,19 @@ class CirceAdapterSpec extends AnyFlatSpec with LazyLogging with Matchers {
     val data = TestData("Tester", Some(30))
     implicit val encoder: CirceEncoder[TestData] = deriveEncoder
     val encoded = implicitly[Encoder[TestData]].encode(data)
-    encoded mustBe """{"name":"Tester","age":30}"""
+    new String(encoded) mustBe """{"name":"Tester","age":30}"""
   }
 
   it must "decode using circe decoders" in {
-    val data = """{"name":"Flagr"}"""
+    val data = """{"name":"Flagr"}""".getBytes
     implicit val decoder: CirceDecoder[TestData] = deriveDecoder
     val decoded = implicitly[Decoder[TestData]].decode(data)
     decoded mustBe TestData("Flagr", None)
   }
 
   it must "decode safely using circe decoders" in {
-    val data = """{"invalid":"data"}"""
-    implicit val decoder: CirceDecoder[TestData] = deriveDecoder
+    val data = """{"invalid":"data"}""".getBytes
+    implicit val decoder: CirceCodec[TestData] = deriveCodec
     val decoded = implicitly[Decoder[TestData]].decodeSafe(data)
     import org.scalatest.EitherValues._
     decoded.left.value mustBe an[DecodingFailure]

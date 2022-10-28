@@ -6,7 +6,7 @@ case class EvalContext(
   // entityID is used to deterministically at random to evaluate the flag result. If it's empty, flagr will randomly generate one.
   entityID: Option[String] = None,
   entityType: Option[String] = None,
-  entityContext: Option[String] = None,
+  protected val entityContext: Option[RawValue] = None,
   enableDebug: Option[Boolean] = None,
   // flagID
   flagID: Option[Long] = None,
@@ -21,7 +21,8 @@ case class EvalContext(
 
   def entityType(value: String): EvalContext = copy(entityType = Option(value))
 
-  def entityContext(value: String): EvalContext = copy(entityContext = Option(value))
+  def entityContext(value: RawValue): EvalContext = copy(entityContext = Option(value))
+  def entityContext(value: String): EvalContext = copy(entityContext = Option(value.getBytes))
 
   def entityContext[T](value: T)(implicit encoder: Encoder[T]): EvalContext =
     copy(entityContext = Option(encoder.encode(value)))

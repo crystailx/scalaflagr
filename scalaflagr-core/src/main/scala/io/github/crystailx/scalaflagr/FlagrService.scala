@@ -1,9 +1,9 @@
 package io.github.crystailx.scalaflagr
 
-import io.github.crystailx.scalaflagr.FlagrService.FlagrContext
+import com.typesafe.scalalogging.LazyLogging
 import io.github.crystailx.scalaflagr.cache.{ CacheKeyCreator, Cacher }
 import io.github.crystailx.scalaflagr.client.EvaluationClient
-import io.github.crystailx.scalaflagr.data.{ EvalContext, EvalResult, Variant }
+import io.github.crystailx.scalaflagr.data.{ EvalContext, EvalResult, FlagrContext, Variant }
 import io.github.crystailx.scalaflagr.effect.{
   Applicative,
   Functor,
@@ -12,9 +12,8 @@ import io.github.crystailx.scalaflagr.effect.{
   RichImplicitMonad
 }
 import io.github.crystailx.scalaflagr.json.{ Decoder, Encoder }
-import com.typesafe.scalalogging.LazyLogging
 
-import scala.language.postfixOps
+import scala.language.{ existentials, postfixOps }
 
 class FlagrService[K, F[_]](client: EvaluationClient[F], cacher: Cacher[K, F])(implicit
   keyCreator: CacheKeyCreator[K],
@@ -69,47 +68,5 @@ class FlagrService[K, F[_]](client: EvaluationClient[F], cacher: Cacher[K, F])(i
     getVariant(context).map(
       _.getOrElse(throw new Exception("No matched variant"))
     )
-
-}
-
-object FlagrService {
-
-  sealed trait FlagrContext {
-    val flagKey: String
-
-    val entityID: String
-
-    val entityType: String
-
-    val entityContext: Option[String]
-  }
-
-  case class BasicContext(
-    flagKey: String,
-    override val entityID: String = "anonymous",
-    override val entityType: String = "user"
-  ) extends FlagrContext {
-    override val entityContext: Option[String] = None
-  }
-
-  case class EntityContext(
-    flagKey: String,
-    override val entityID: String,
-    override val entityType: String,
-    override val entityContext: Option[String]
-  ) extends FlagrContext
-
-  object EntityContext {
-
-    def apply[T](
-      flagKey: String,
-      entityID: String = "anonymous",
-      entityType: String = "user",
-      entityContext: T
-    )(implicit
-      encoder: Encoder[T]
-    ): EntityContext =
-      new EntityContext(flagKey, entityID, entityType, Some(encoder.encode(entityContext)))
-  }
 
 }

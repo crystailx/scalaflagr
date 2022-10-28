@@ -1,6 +1,6 @@
 package io.github.crystailx.scalaflagr.data
 
-import java.time.LocalDate
+import java.time.Instant
 
 case class Flag(
   id: Option[Long] = None,
@@ -19,5 +19,5 @@ case class Flag(
   notes: Option[String] = None,
   createdBy: Option[String] = None,
   updatedBy: Option[String] = None,
-  updatedAt: Option[LocalDate] = None
+  updatedAt: Option[Instant] = None
 )
