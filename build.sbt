@@ -8,6 +8,7 @@ lazy val supportedScalaVersions = Seq(scala213, scala212 /*, scala211*/ )
 ThisBuild / organization := "io.github.crystailx"
 ThisBuild / version := "1.0.0"
 ThisBuild / scalaVersion := scala213
+ThisBuild / crossScalaVersions := supportedScalaVersions
 ThisBuild / trackInternalDependencies := TrackLevel.TrackAlways
 //ThisBuild / exportJars := true
 ThisBuild / libraryDependencies ++= Dependencies.test.map(_ % Test)
@@ -38,6 +39,11 @@ lazy val noPublishSettings = Seq(
 lazy val core = (project in file("scalaflagr-core"))
   .settings(name := "scalaflagr-core")
   .settings(moduleSettings)
+  .settings(libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, scalaMajor)) if scalaMajor == 12 =>
+      Seq("com.chuusai" %% "shapeless" % "2.3.10")
+    case _ => Seq("com.chuusai" %% "shapeless" % "2.3.10")
+  }))
 
 lazy val sttp1Client = (project in file("scalaflagr-client-sttp1"))
   .settings(name := "scalaflagr-client-sttp1")

@@ -1,16 +1,13 @@
 package io.github.crystailx.scalaflagr.json
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.{ JsonGenerator, JsonParser, Version }
+import com.fasterxml.jackson.core.{ JsonGenerator, JsonParser }
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.{ ClassTagExtensions, DefaultScalaModule }
 import io.github.crystailx.scalaflagr.data.RawValue
-
-import scala.jdk.CollectionConverters.{ MapHasAsJava, SeqHasAsJava }
 package object jackson extends EncoderAdapter with DecoderAdapter {
 
   private[jackson] class ByteArrayDeserializer
@@ -28,16 +25,6 @@ package object jackson extends EncoderAdapter with DecoderAdapter {
       provider: SerializerProvider
     ): Unit = gen.writeRaw(new String(value))
   }
-
-  object ByteArrayModule
-      extends SimpleModule(
-        "ByteArrayModule",
-        Version.unknownVersion(),
-        Map[Class[_], JsonDeserializer[_]](
-          classOf[RawValue] -> new ByteArrayDeserializer
-        ).asJava,
-        List[JsonSerializer[_]](new ByteArraySerializer).asJava
-      )
 
   lazy val mapper = new ObjectMapper() with ClassTagExtensions
   mapper.registerModules(DefaultScalaModule, new JavaTimeModule(), ByteArrayModule)
