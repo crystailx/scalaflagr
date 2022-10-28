@@ -2,7 +2,7 @@ package io.github.crystailx.scalaflagr.client
 
 import io.github.crystailx.scalaflagr.data.RawValue
 import io.github.crystailx.scalaflagr.effect.Functor
-import io.github.crystailx.scalaflagr.json.{Decoder, Encoder}
+import io.github.crystailx.scalaflagr.json.{ Decoder, Encoder }
 
 package object api {
 
@@ -25,7 +25,7 @@ package object api {
     functor.map(res)(decoder.decode)
 
   private[api] implicit def autoFunctorUnitMapping[F[_]](res: F[RawValue])(implicit
-                                                                           functor: Functor[F]
+    functor: Functor[F]
   ): F[Unit] =
     functor.map(res)(_ => ())
 

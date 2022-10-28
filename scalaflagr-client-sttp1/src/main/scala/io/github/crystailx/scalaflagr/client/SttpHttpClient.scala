@@ -3,7 +3,7 @@ package io.github.crystailx.scalaflagr.client
 import com.softwaremill.sttp._
 import io.github.crystailx.scalaflagr.data.RawValue
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 abstract class SttpHttpClient extends HttpClient[Future] {
 

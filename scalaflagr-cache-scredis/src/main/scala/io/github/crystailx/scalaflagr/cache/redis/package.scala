@@ -1,8 +1,8 @@
 package io.github.crystailx.scalaflagr.cache
 
 import io.github.crystailx.scalaflagr.data.RawValue
-import io.github.crystailx.scalaflagr.json.{Decoder, Encoder}
-import scredis.serialization.{BytesReader, BytesWriter, Reader, Writer}
+import io.github.crystailx.scalaflagr.json.{ Decoder, Encoder }
+import scredis.serialization.{ BytesReader, BytesWriter, Reader, Writer }
 
 package object redis {
 

@@ -1,13 +1,19 @@
 package io.github.crystailx.scalaflagr
 
 import com.typesafe.scalalogging.LazyLogging
-import io.github.crystailx.scalaflagr.cache.{CacheKeyCreator, Cacher}
+import io.github.crystailx.scalaflagr.cache.{ CacheKeyCreator, Cacher }
 import io.github.crystailx.scalaflagr.client.EvaluationClient
-import io.github.crystailx.scalaflagr.data.{EvalContext, EvalResult, FlagrContext, Variant}
-import io.github.crystailx.scalaflagr.effect.{Applicative, Functor, Monad, RichImplicitFunctor, RichImplicitMonad}
-import io.github.crystailx.scalaflagr.json.{Decoder, Encoder}
+import io.github.crystailx.scalaflagr.data.{ EvalContext, EvalResult, FlagrContext, Variant }
+import io.github.crystailx.scalaflagr.effect.{
+  Applicative,
+  Functor,
+  Monad,
+  RichImplicitFunctor,
+  RichImplicitMonad
+}
+import io.github.crystailx.scalaflagr.json.{ Decoder, Encoder }
 
-import scala.language.{existentials, postfixOps}
+import scala.language.{ existentials, postfixOps }
 
 class FlagrService[K, F[_]](client: EvaluationClient[F], cacher: Cacher[K, F])(implicit
   keyCreator: CacheKeyCreator[K],

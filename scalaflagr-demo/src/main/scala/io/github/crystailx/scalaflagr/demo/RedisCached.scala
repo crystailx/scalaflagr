@@ -9,14 +9,18 @@ import io.circe.generic.semiauto.deriveCodec
 import io.github.crystailx.scalaflagr.FlagrService
 import io.github.crystailx.scalaflagr.cache._
 import io.github.crystailx.scalaflagr.cache.redis._
-import io.github.crystailx.scalaflagr.client.{FlagrConfig, SttpEvaluationClient, SttpManagerClient}
+import io.github.crystailx.scalaflagr.client.{
+  FlagrConfig,
+  SttpEvaluationClient,
+  SttpManagerClient
+}
 import io.github.crystailx.scalaflagr.data.EntityContext
 import io.github.crystailx.scalaflagr.json.circe._
 import scredis.RedisCluster
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{ Await, Future }
 
 object RedisCached extends LazyLogging {
 

@@ -1,11 +1,11 @@
 package io.github.crystailx.scalaflagr
 
 import com.typesafe.scalalogging.LazyLogging
-import io.github.crystailx.scalaflagr.cache.{CacheKeyCreator, Cacher}
-import io.github.crystailx.scalaflagr.client.{EvaluationClient, FlagrConfig, HttpMethod}
-import io.github.crystailx.scalaflagr.data.{BasicContext, EvalContext, EvalResult, RawValue}
-import io.github.crystailx.scalaflagr.effect.{Applicative, Functor, Monad}
-import io.github.crystailx.scalaflagr.json.{Decoder, Encoder}
+import io.github.crystailx.scalaflagr.cache.{ CacheKeyCreator, Cacher }
+import io.github.crystailx.scalaflagr.client.{ EvaluationClient, FlagrConfig, HttpMethod }
+import io.github.crystailx.scalaflagr.data.{ BasicContext, EvalContext, EvalResult, RawValue }
+import io.github.crystailx.scalaflagr.effect.{ Applicative, Functor, Monad }
+import io.github.crystailx.scalaflagr.json.{ Decoder, Encoder }
 import org.scalatest.OptionValues.convertOptionToValuable
 import org.scalatest.Outcome
 import org.scalatest.flatspec.FixtureAnyFlatSpec
@@ -86,10 +86,10 @@ class FlagrServiceSpec extends FixtureAnyFlatSpec with Matchers with LazyLogging
       override val config: FlagrConfig = FlagrConfig("http://localhost:12345")
 
       protected override def send(
-                                   method: HttpMethod,
-                                   url: String,
-                                   body: Option[RawValue],
-                                   params: Map[String, String]
+        method: HttpMethod,
+        url: String,
+        body: Option[RawValue],
+        params: Map[String, String]
       ): Option[RawValue] = {
         logger.debug(s"$url\n$body")
         Some(response.getBytes)
