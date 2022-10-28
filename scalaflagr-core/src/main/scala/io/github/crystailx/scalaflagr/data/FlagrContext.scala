@@ -21,10 +21,10 @@ case class BasicContext(
 }
 
 case class EntityContext(
-                          flagKey: String,
-                          override protected[scalaflagr] val entityContext: Option[RawValue],
-                          override val entityID: String,
-                          override val entityType: String
+  flagKey: String,
+  override protected[scalaflagr] val entityContext: Option[RawValue],
+  override val entityID: String,
+  override val entityType: String
 ) extends FlagrContext {
   def flagKey(value: String): EntityContext = copy(flagKey = value)
   def entityID(value: String): EntityContext = copy(entityID = value)

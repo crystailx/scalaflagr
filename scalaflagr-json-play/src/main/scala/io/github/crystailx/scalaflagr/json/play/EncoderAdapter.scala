@@ -12,8 +12,7 @@ trait EncoderAdapter extends BuiltInEncoders[PlayEncoder] {
     encoder.writes(body).toString().getBytes
 
   // some default encoders to avoid boilerplate
-  implicit val byteArrayEncoder: PlayEncoder[RawValue] = (o: RawValue) =>
-    Json.parse(new String(o))
+  implicit val byteArrayEncoder: PlayEncoder[RawValue] = (o: RawValue) => Json.parse(new String(o))
   implicit val constraintEncoder: PlayEncoder[Constraint] = Json.writes
   implicit val createConstraintRequestEncoder: PlayEncoder[CreateConstraintRequest] = Json.writes
   implicit val createFlagRequestEncoder: PlayEncoder[CreateFlagRequest] = Json.writes
