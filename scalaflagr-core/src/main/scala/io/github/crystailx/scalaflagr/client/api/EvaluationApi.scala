@@ -21,9 +21,7 @@ trait EvaluationApi[F[_]] extends HttpClient[F] {
     encoder: Encoder[EvalContext],
     decoder: Decoder[EvalResult]
   ): F[EvalResult] =
-    functor.map(post(s"$host$basePath/evaluation", encoder.encode(context)))(s =>
-      decoder.decode(s).copy(rawValue = Some(s))
-    )
+    post(s"$host$basePath/evaluation", context)
 
   def batchEvaluate(
     context: EvaluationBatchRequest
@@ -31,6 +29,6 @@ trait EvaluationApi[F[_]] extends HttpClient[F] {
     encoder: Encoder[EvaluationBatchRequest],
     decoder: Decoder[EvaluationBatchResponse]
   ): F[EvaluationBatchResponse] =
-    post(s"$host$basePath/evaluation/batch", encoder.encode(context))
+    post(s"$host$basePath/evaluation/batch", context)
 
 }

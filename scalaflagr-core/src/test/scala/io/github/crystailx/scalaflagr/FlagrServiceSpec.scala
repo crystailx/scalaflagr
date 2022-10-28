@@ -1,12 +1,11 @@
 package io.github.crystailx.scalaflagr
 
-import io.github.crystailx.scalaflagr.FlagrService.BasicContext
-import io.github.crystailx.scalaflagr.cache.{ CacheKeyCreator, Cacher }
-import io.github.crystailx.scalaflagr.client.{ EvaluationClient, FlagrConfig }
-import io.github.crystailx.scalaflagr.data.{ EvalContext, EvalResult }
-import io.github.crystailx.scalaflagr.effect.{ Applicative, Functor, Monad }
-import io.github.crystailx.scalaflagr.json.{ Decoder, Encoder }
 import com.typesafe.scalalogging.LazyLogging
+import io.github.crystailx.scalaflagr.cache.{CacheKeyCreator, Cacher}
+import io.github.crystailx.scalaflagr.client.{EvaluationClient, FlagrConfig, HttpMethod}
+import io.github.crystailx.scalaflagr.data.{BasicContext, EvalContext, EvalResult, RawValue}
+import io.github.crystailx.scalaflagr.effect.{Applicative, Functor, Monad}
+import io.github.crystailx.scalaflagr.json.{Decoder, Encoder}
 import org.scalatest.OptionValues.convertOptionToValuable
 import org.scalatest.Outcome
 import org.scalatest.flatspec.FixtureAnyFlatSpec
@@ -17,23 +16,6 @@ import scala.collection.mutable
 class FlagrServiceSpec extends FixtureAnyFlatSpec with Matchers with LazyLogging {
 
   case class FixtureParam() {
-
-    val client: EvaluationClient[Option] = new EvaluationClient[Option] {
-
-      private val response: String =
-        """
-          |{
-          | "flagKey": "matched",
-          | "segmentID": 1
-          |}
-          |""".stripMargin
-      override val config: FlagrConfig = FlagrConfig("http://localhost:12345")
-
-      override protected def send(url: String, body: String): Option[String] = {
-        logger.debug(s"$url\n$body")
-        Some(response)
-      }
-    }
 
     val cacher: Cacher[String, Option] = new Cacher[String, Option] {
       private val cache: mutable.HashMap[String, EvalResult] = mutable.HashMap.empty
@@ -61,8 +43,8 @@ class FlagrServiceSpec extends FixtureAnyFlatSpec with Matchers with LazyLogging
     }
 
     implicit val cacheKeyCreator: CacheKeyCreator[String] =
-      (v1: String, v2: String, v3: String, v4: Option[String]) => {
-        val key = s"$v1-$v2-$v3-${v4.map(_.take(10)).getOrElse("")}"
+      (v1: String, v2: String, v3: String, v4: Option[RawValue]) => {
+        val key = s"$v1-$v2-$v3-${v4.map(new String(_).take(10)).getOrElse("")}"
         logger.debug(s"created key: $key")
         key
       }
@@ -78,16 +60,42 @@ class FlagrServiceSpec extends FixtureAnyFlatSpec with Matchers with LazyLogging
     implicit val optApplicative: Applicative[Option] = new Applicative[Option] {
       override def pure[A](value: A): Option[A] = Option(value)
     }
-    implicit val encoder: Encoder[EvalContext] = _.toString
+    implicit val encoder: Encoder[EvalContext] = _.toString.getBytes
 
     implicit val decoder: Decoder[EvalResult] = new Decoder[EvalResult] {
 
-      override def decode(body: String): EvalResult = {
-        logger.debug(s"decoding body: $body")
-        EvalResult(flagKey = Some("matched"), segmentID = Some(1), rawValue = Some(body))
+      override def decode(value: RawValue): EvalResult = {
+        logger.debug(s"decoding body: ${new String(value)}")
+        EvalResult(flagKey = Some("matched"), segmentID = Some(1), variantAttachment = Some(value))
       }
 
-      override def decodeSafe(body: String): Either[Exception, EvalResult] = Right(decode(body))
+      override def decodeSafe(value: RawValue): Either[Throwable, EvalResult] = Right(
+        decode(value)
+      )
+    }
+
+    val client: EvaluationClient[Option] = new EvaluationClient[Option] {
+
+      private val response: String =
+        """
+          |{
+          | "flagKey": "matched",
+          | "segmentID": 1
+          |}
+          |""".stripMargin
+      override val config: FlagrConfig = FlagrConfig("http://localhost:12345")
+
+      protected override def send(
+                                   method: HttpMethod,
+                                   url: String,
+                                   body: Option[RawValue],
+                                   params: Map[String, String]
+      ): Option[RawValue] = {
+        logger.debug(s"$url\n$body")
+        Some(response.getBytes)
+      }
+
+      override protected implicit val functor: Functor[Option] = optFunctor
     }
   }
 

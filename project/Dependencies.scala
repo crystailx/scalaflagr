@@ -9,6 +9,8 @@ object Dependencies {
   private val akkaStreamVersion = "2.6.20"
   private val catsVersion = "2.8.0"
   private val redisVersion = "2.4.3"
+  private val playJsonVersion = "2.9.3"
+  private val jacksonVersion = "2.13.4"
 
   def log: Seq[ModuleID] = Seq(
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion,
@@ -21,6 +23,14 @@ object Dependencies {
     "io.circe" %% "circe-core" % circeVersion,
     "io.circe" %% "circe-generic" % circeVersion,
     "io.circe" %% "circe-parser" % circeVersion
+  )
+
+  def playJson: Seq[ModuleID] = Seq("com.typesafe.play" %% "play-json" % playJsonVersion)
+
+  def jackson: Seq[ModuleID] = Seq(
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % jacksonVersion
   )
 
   def sttp1: Seq[ModuleID] =

@@ -41,7 +41,7 @@ trait FlagApi[F[_]] extends HttpClient[F] {
     encoder: Encoder[UpdateFlagRequest],
     decoder: Decoder[Flag]
   ): F[Flag] =
-    functor.map(put(s"$apiBasePath/$flagID", encoder.encode(flagRequest)))(decoder.decode)
+    put(s"$apiBasePath/$flagID", flagRequest)
 
   def restoreFlag(flagID: Long)(implicit decoder: Decoder[Flag]): F[Flag] =
     put(s"$apiBasePath/$flagID/restore")

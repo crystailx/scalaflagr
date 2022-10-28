@@ -1,5 +1,7 @@
 package io.github.crystailx.scalaflagr.data
 
+import io.github.crystailx.scalaflagr.json.Decoder
+
 case class EvalResult(
   flagID: Option[Long] = None,
   flagKey: Option[String] = None,
@@ -10,8 +12,11 @@ case class EvalResult(
   evalContext: Option[EvalContext] = None,
   timestamp: Option[String] = None,
   evalDebugLog: Option[EvalDebugLog] = None,
-  private val rawValue: Option[String] = None
+  protected val variantAttachment: Option[RawValue]
 ) {
-  def toVariant: Option[Variant] = variantKey.map(Variant(variantID, _, rawValue))
+  def toVariant: Option[Variant] = variantKey.map(Variant(variantID, _, variantAttachment))
+
+  def variantAttachment[T](implicit decoder: Decoder[T]): Option[T] =
+    variantAttachment.flatMap(decoder.decodeSafe(_).toOption)
 
 }

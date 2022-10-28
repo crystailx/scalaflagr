@@ -1,6 +1,11 @@
 package io.github.crystailx.scalaflagr.client.syntax
 
-import io.github.crystailx.scalaflagr.data.{CreateSegmentRequest, EvalContext, EvaluationBatchRequest, UpdateSegmentRequest}
+import io.github.crystailx.scalaflagr.data.{
+  CreateSegmentRequest,
+  EvalContext,
+  EvaluationBatchRequest,
+  UpdateSegmentRequest
+}
 
 trait SegmentSyntax {
 

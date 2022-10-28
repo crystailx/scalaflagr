@@ -1,7 +1,9 @@
 package io.github.crystailx.scalaflagr.json
 
-trait Decoder[T] {
-  def decode(body: String): T
+import io.github.crystailx.scalaflagr.data.RawValue
 
-  def decodeSafe(body: String): Either[Exception, T]
+trait Decoder[T] {
+  def decode(value: RawValue): T
+
+  def decodeSafe(value: RawValue): Either[Throwable, T]
 }
