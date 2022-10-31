@@ -4,7 +4,7 @@ import io.github.crystailx.scalaflagr.data.{ CreateTagRequest, FindTagsParam }
 
 trait TagSyntax {
 
-  def createTagRequest(): CreateTagRequest = CreateTagRequest("")
+  def createTagRequest: CreateTagRequest = CreateTagRequest("")
 
-  def findTagsParam(): FindTagsParam = FindTagsParam()
+  def findTagsParam: FindTagsParam = FindTagsParam()
 }

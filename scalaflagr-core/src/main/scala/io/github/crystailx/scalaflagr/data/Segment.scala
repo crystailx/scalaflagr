@@ -1,10 +1,10 @@
 package io.github.crystailx.scalaflagr.data
 
 case class Segment(
-  id: Option[Long] = None,
+  id: Long,
   description: String,
-  constraints: Option[List[Constraint]] = None,
-  distributions: Option[List[Distribution]] = None,
+  constraints: List[Constraint] = Nil,
+  distributions: List[Distribution] = Nil,
   rank: Long,
   rolloutPercent: Long
 )

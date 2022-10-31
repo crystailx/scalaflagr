@@ -4,7 +4,7 @@ import io.github.crystailx.scalaflagr.data.{ CreateVariantRequest, UpdateVariant
 
 trait VariantSyntax {
 
-  def createVariantRequest(): CreateVariantRequest = CreateVariantRequest("")
+  def createVariantRequest: CreateVariantRequest = CreateVariantRequest("")
 
-  def updateVariantRequest(): UpdateVariantRequest = UpdateVariantRequest("")
+  def updateVariantRequest: UpdateVariantRequest = UpdateVariantRequest("")
 }

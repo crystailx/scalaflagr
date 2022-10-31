@@ -9,12 +9,14 @@ case class EvalResult(
   segmentID: Option[Long] = None,
   variantID: Option[Long] = None,
   variantKey: Option[String] = None,
-  evalContext: Option[EvalContext] = None,
-  timestamp: Option[String] = None,
+  evalContext: EvalContext = EvalContext(),
+  timestamp: String,
   evalDebugLog: Option[EvalDebugLog] = None,
   protected val variantAttachment: Option[RawValue]
 ) {
-  def toVariant: Option[Variant] = variantKey.map(Variant(variantID, _, variantAttachment))
+
+  def toVariant: Option[Variant] =
+    variantID.zip(variantKey).map(v => Variant(v._1, v._2, variantAttachment))
 
   def variantAttachment[T](implicit decoder: Decoder[T]): Option[T] =
     variantAttachment.flatMap(decoder.decodeSafe(_).toOption)

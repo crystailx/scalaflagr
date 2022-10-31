@@ -9,11 +9,11 @@ import io.github.crystailx.scalaflagr.data.{
 
 trait FlagSyntax {
 
-  def createFlagRequest(): CreateFlagRequest = CreateFlagRequest("")
+  def createFlagRequest: CreateFlagRequest = CreateFlagRequest("")
 
-  def updateFlagRequest(): UpdateFlagRequest = UpdateFlagRequest()
+  def updateFlagRequest: UpdateFlagRequest = UpdateFlagRequest()
 
-  def findFlagsParam(): FindFlagsParam = FindFlagsParam()
+  def findFlagsParam: FindFlagsParam = FindFlagsParam()
 
   def enable: EnableFlagRequest = FlagSyntax.enable
 
