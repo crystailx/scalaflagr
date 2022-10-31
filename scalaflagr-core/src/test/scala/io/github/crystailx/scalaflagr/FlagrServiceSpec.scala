@@ -66,7 +66,12 @@ class FlagrServiceSpec extends FixtureAnyFlatSpec with Matchers with LazyLogging
 
       override def decode(value: RawValue): EvalResult = {
         logger.debug(s"decoding body: ${new String(value)}")
-        EvalResult(flagKey = Some("matched"), segmentID = Some(1), variantAttachment = Some(value))
+        EvalResult(
+          flagKey = Some("matched"),
+          segmentID = Some(1),
+          variantAttachment = Some(value),
+          timestamp = "2022-10-31T16:30:14Z"
+        )
       }
 
       override def decodeSafe(value: RawValue): Either[Throwable, EvalResult] = Right(

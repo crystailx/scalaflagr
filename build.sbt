@@ -6,7 +6,7 @@ lazy val scala212 = "2.12.17"
 lazy val scala211 = "2.11.12"
 lazy val supportedScalaVersions = Seq(scala213, scala212 /*, scala211*/ )
 ThisBuild / organization := "io.github.crystailx"
-ThisBuild / version := "1.0.0"
+ThisBuild / version := "1.1.0"
 ThisBuild / scalaVersion := scala213
 ThisBuild / crossScalaVersions := supportedScalaVersions
 ThisBuild / trackInternalDependencies := TrackLevel.TrackAlways
@@ -45,6 +45,8 @@ lazy val core = (project in file("scalaflagr-core"))
     case _ => Seq("com.chuusai" %% "shapeless" % "2.3.10")
   }))
 
+lazy val coreWithTest = core % "compile->compile;test->test"
+
 lazy val sttp1Client = (project in file("scalaflagr-client-sttp1"))
   .settings(name := "scalaflagr-client-sttp1")
   .settings(moduleSettings)
@@ -61,19 +63,19 @@ lazy val jsonCirce = (project in file("scalaflagr-json-circe"))
   .settings(name := "scalaflagr-json-circe")
   .settings(moduleSettings)
   .settings(libraryDependencies ++= Dependencies.circe)
-  .dependsOn(core)
+  .dependsOn(coreWithTest)
 
 lazy val jsonPlay = (project in file("scalaflagr-json-play"))
   .settings(name := "scalaflagr-json-play")
   .settings(moduleSettings)
   .settings(libraryDependencies ++= Dependencies.playJson)
-  .dependsOn(core)
+  .dependsOn(coreWithTest)
 
 lazy val jsonJackson = (project in file("scalaflagr-json-jackson"))
   .settings(name := "scalaflagr-json-jackson")
   .settings(moduleSettings)
   .settings(libraryDependencies ++= Dependencies.jackson)
-  .dependsOn(core)
+  .dependsOn(coreWithTest)
 
 lazy val redisCache = (project in file("scalaflagr-cache-scredis"))
   .settings(name := "scalaflagr-cache-scredis")

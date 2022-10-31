@@ -9,8 +9,8 @@ import io.github.crystailx.scalaflagr.data.{
 
 trait SegmentSyntax {
 
-  def createSegmentRequest(): CreateSegmentRequest = CreateSegmentRequest("", 0)
+  def createSegmentRequest: CreateSegmentRequest = CreateSegmentRequest("", 0)
 
-  def updateSegmentRequest(): UpdateSegmentRequest = UpdateSegmentRequest("", 0)
+  def updateSegmentRequest: UpdateSegmentRequest = UpdateSegmentRequest("", 0)
 
 }

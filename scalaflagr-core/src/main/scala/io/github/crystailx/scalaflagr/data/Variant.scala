@@ -3,7 +3,7 @@ package io.github.crystailx.scalaflagr.data
 import io.github.crystailx.scalaflagr.json.Decoder
 
 case class Variant(
-  id: Option[Long] = None,
+  id: Long,
   key: String,
   protected val attachment: Option[RawValue] = None
 ) {
