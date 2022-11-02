@@ -1,6 +1,6 @@
 package crystailx.scalaflagr.api.syntax
 
-import crystailx.scalaflagr.data.{CreateVariantRequest, UpdateVariantRequest}
+import crystailx.scalaflagr.data.{ CreateVariantRequest, UpdateVariantRequest }
 
 trait VariantSyntax {
 

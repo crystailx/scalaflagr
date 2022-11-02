@@ -1,7 +1,7 @@
 package crystailx.scalaflagr.json.play
 
 import com.typesafe.scalalogging.LazyLogging
-import crystailx.scalaflagr.json.{Decoder, Encoder}
+import crystailx.scalaflagr.json.{ Decoder, Encoder }
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.libs.json.{ JsResultException, Json, Reads => PlayDecoder, Writes => PlayEncoder }

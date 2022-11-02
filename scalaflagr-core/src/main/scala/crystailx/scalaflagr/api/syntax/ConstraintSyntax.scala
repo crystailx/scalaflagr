@@ -1,6 +1,6 @@
 package crystailx.scalaflagr.api.syntax
 
-import crystailx.scalaflagr.data.{CreateConstraintRequest, UpdateConstraintRequest}
+import crystailx.scalaflagr.data.{ CreateConstraintRequest, UpdateConstraintRequest }
 
 trait ConstraintSyntax {
 

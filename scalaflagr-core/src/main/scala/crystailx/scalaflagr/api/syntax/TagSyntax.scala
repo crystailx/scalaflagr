@@ -1,6 +1,6 @@
 package crystailx.scalaflagr.api.syntax
 
-import crystailx.scalaflagr.data.{CreateTagRequest, FindTagsParam}
+import crystailx.scalaflagr.data.{ CreateTagRequest, FindTagsParam }
 
 trait TagSyntax {
 

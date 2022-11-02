@@ -1,6 +1,6 @@
 package crystailx.scalaflagr.api.syntax
 
-import crystailx.scalaflagr.data.{CreateSegmentRequest, UpdateSegmentRequest}
+import crystailx.scalaflagr.data.{ CreateSegmentRequest, UpdateSegmentRequest }
 
 trait SegmentSyntax {
 

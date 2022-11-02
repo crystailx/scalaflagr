@@ -1,6 +1,11 @@
 package crystailx.scalaflagr.api.syntax
 
-import crystailx.scalaflagr.data.{CreateFlagRequest, EnableFlagRequest, FindFlagsParam, UpdateFlagRequest}
+import crystailx.scalaflagr.data.{
+  CreateFlagRequest,
+  EnableFlagRequest,
+  FindFlagsParam,
+  UpdateFlagRequest
+}
 
 trait FlagSyntax {
 

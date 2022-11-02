@@ -1,6 +1,6 @@
 package crystailx.scalaflagr.api.syntax
 
-import crystailx.scalaflagr.data.{EvalContext, EvaluationBatchRequest}
+import crystailx.scalaflagr.data.{ EvalContext, EvaluationBatchRequest }
 
 trait EvaluationSyntax {
 
