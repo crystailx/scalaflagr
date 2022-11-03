@@ -6,7 +6,7 @@ lazy val scala212 = "2.12.17"
 lazy val scala211 = "2.11.12"
 lazy val supportedScalaVersions = Seq(scala213, scala212 /*, scala211*/ )
 ThisBuild / organization := "io.github.crystailx"
-ThisBuild / version := "1.1.0"
+ThisBuild / version := "1.2.0"
 ThisBuild / scalaVersion := scala213
 ThisBuild / crossScalaVersions := supportedScalaVersions
 ThisBuild / trackInternalDependencies := TrackLevel.TrackAlways
@@ -42,7 +42,7 @@ lazy val core = (project in file("scalaflagr-core"))
   .settings(libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, scalaMajor)) if scalaMajor == 12 =>
       Seq("com.chuusai" %% "shapeless" % "2.3.10")
-    case _ => Seq("com.chuusai" %% "shapeless" % "2.3.10")
+    case _ => Seq.empty
   }))
 
 lazy val coreWithTest = core % "compile->compile;test->test"
@@ -83,20 +83,10 @@ lazy val redisCache = (project in file("scalaflagr-cache-scredis"))
   .settings(libraryDependencies ++= Dependencies.redis)
   .dependsOn(core)
 
-lazy val demo = (project in file("scalaflagr-demo"))
-  .settings(name := "scalaflagr-demo")
-  .settings(moduleSettings)
-  .settings(noPublishSettings)
-  .settings(
-    exportToInternal := TrackLevel.NoTracking,
-    libraryDependencies ++= Dependencies.sttp1Akka
-  )
-  .dependsOn(core, sttp1Client, jsonCirce, jsonPlay, jsonJackson, catsEffect, redisCache)
-
 lazy val root = (project in file("."))
   .settings(noPublishSettings)
   .settings(
     crossScalaVersions := Nil,
     update / aggregate := false
   )
-  .aggregate(core, sttp1Client, catsEffect, jsonCirce, jsonPlay, jsonJackson, redisCache, demo)
+  .aggregate(core, sttp1Client, catsEffect, jsonCirce, jsonPlay, jsonJackson, redisCache)
