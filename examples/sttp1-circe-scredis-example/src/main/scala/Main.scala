@@ -1,19 +1,17 @@
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import com.softwaremill.sttp.SttpBackend
+import com.softwaremill.sttp.{ SttpBackend, UriInterpolator }
 import com.softwaremill.sttp.akkahttp.AkkaHttpBackend
-import io.github.crystailx.scalaflagr.FlagrService
-import io.github.crystailx.scalaflagr.cache.redis._
-import io.github.crystailx.scalaflagr.cache.simpleCacheKey
-import io.github.crystailx.scalaflagr.client.syntax._
-import io.github.crystailx.scalaflagr.client.{
-  FlagrConfig,
-  SttpEvaluationClient,
-  SttpManagerClient
-}
-import io.github.crystailx.scalaflagr.data._
-import io.github.crystailx.scalaflagr.effect._
-import io.github.crystailx.scalaflagr.json.circe._
+import crystailx.scalaflagr.api._
+import crystailx.scalaflagr.api.syntax._
+import crystailx.scalaflagr.auth.BasicAuthConfig
+import crystailx.scalaflagr.cache.redis.{ RedisCache, _ }
+import crystailx.scalaflagr.cache.simpleCacheKey
+import crystailx.scalaflagr.client.SttpHttpClient
+import crystailx.scalaflagr.data._
+import crystailx.scalaflagr.effect._
+import crystailx.scalaflagr.json.circe._
+import crystailx.scalaflagr.{ FlagrClient, FlagrConfig, FlagrService }
 import scredis.protocol.AuthConfig
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -30,24 +28,36 @@ object Main {
 
   def main(args: Array[String]): Unit = {
     implicit val backend: SttpBackend[Future, Source[ByteString, Any]] = AkkaHttpBackend()
-    val manager = new SttpManagerClient(FlagrConfig("http://localhost:18000"))
-    val client = new SttpEvaluationClient(FlagrConfig("http://localhost:18000"))
+    val client = FlagrClient(
+      new SttpHttpClient(
+        FlagrConfig("http://localhost:18000", basicAuth = Some(BasicAuthConfig("test", "testtest")))
+      )
+    )
     lazy val cacher = new RedisCache(
       scredis.Redis.apply("localhost", 36379, Some(AuthConfig(None, "test")))
     )
     lazy val service = new FlagrService(client, cacher)
 
-    def createFlag: Future[Flag] =
-      manager.createFlag(createFlagRequest description "test flag" key "test-flag")
+    def createNewFlag: Future[Flag] =
+      client.execute(
+        createFlag(createFlagRequest description "test flag" key "test-flag")
+      )
 
     def addVariant(flagID: Long): Future[Variant] =
-      manager.createVariant(
-        flagID,
-        createVariantRequest key "var1" attachment Attachment("homepage")
+      client.execute(
+        createVariant(
+          flagID,
+          createVariantRequest key "var1" attachment Attachment("homepage")
+        )
       )
 
     def addSegment(flagID: Long): Future[Segment] =
-      manager.createSegment(flagID, createSegmentRequest description "all user" rolloutPercent 100)
+      client.execute(
+        createSegment(
+          flagID,
+          createSegmentRequest description "all user" rolloutPercent 100
+        )
+      )
 
     def setDistribution(
       flagID: Long,
@@ -55,20 +65,22 @@ object Main {
       variantKey: String,
       variantID: Long
     ): Future[List[Distribution]] =
-      manager.updateDistributions(
-        flagID,
-        segmentID,
-        updateDistributionsRequest distributions List(
-          Distribution(None, 100, variantKey, variantID)
+      client.execute(
+        updateDistributions(
+          flagID,
+          segmentID,
+          updateDistributionsRequest distributions List(
+            Distribution(None, 100, variantKey, variantID)
+          )
         )
       )
 
     val setupFlag = for {
-      flag        <- createFlag
+      flag        <- createNewFlag
       variant     <- addVariant(flag.id)
       segment     <- addSegment(flag.id)
       _           <- setDistribution(flag.id, segment.id, variant.key, variant.id)
-      enabledFlag <- manager.enableFlag(flag.id, enable)
+      enabledFlag <- client.execute(enableFlag(flag.id, enable))
     } yield enabledFlag
     val flag = Await.result(setupFlag, Duration.Inf)
     println(s"flag enabled:${flag.enabled}")
@@ -80,6 +92,7 @@ object Main {
     } yield (isEnabled, variant, attachment)
     val result = Await.result(evaluation, Duration.Inf)
     println(result)
+    System.exit(0)
   }
 
 }

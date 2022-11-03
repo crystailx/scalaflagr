@@ -1,14 +1,15 @@
 package crystailx.scalaflagr.api
 
-import crystailx.scalaflagr.RequestBuilder
+import crystailx.scalaflagr.RequestHandler
+import crystailx.scalaflagr.data.Health
 
 import scala.language.implicitConversions
 
 trait HealthApi {
 
   private val apiBasePath: String = "/health"
-  import RequestBuilder.get
+  import RequestHandler.get
 
-  def healthStatus: RequestBuilder[Nothing] =
+  def healthStatus: RequestHandler[Nothing, Health] =
     get(apiBasePath)
 }

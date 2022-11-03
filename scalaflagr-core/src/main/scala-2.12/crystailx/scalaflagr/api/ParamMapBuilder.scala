@@ -1,4 +1,4 @@
-package crystailx.scalaflagr.client.api
+package crystailx.scalaflagr.api
 
 import shapeless.ops.hlist.ToTraversable
 import shapeless.{ HList, LabelledGeneric }

@@ -1,7 +1,7 @@
 package crystailx.scalaflagr.api
 
-import crystailx.scalaflagr.RequestBuilder
-import crystailx.scalaflagr.data.UpdateDistributionsRequest
+import crystailx.scalaflagr.RequestHandler
+import crystailx.scalaflagr.data.{ Distribution, UpdateDistributionsRequest }
 
 import scala.language.implicitConversions
 
@@ -9,15 +9,18 @@ trait DistributionApi {
 
   private val apiBasePath: String = "/flags/%d/segments/%d/distributions"
 
-  import RequestBuilder._
+  import RequestHandler._
 
-  def findDistributions(flagID: Long, segmentID: Long): RequestBuilder[Nothing] =
+  def findDistributions(
+    flagID: Long,
+    segmentID: Long
+  ): RequestHandler[Nothing, List[Distribution]] =
     get(apiBasePath format (flagID, segmentID))
 
   def updateDistributions(
     flagID: Long,
     segmentID: Long,
     body: UpdateDistributionsRequest
-  ): RequestBuilder[UpdateDistributionsRequest] =
+  ): RequestHandler[UpdateDistributionsRequest, List[Distribution]] =
     put(apiBasePath format (flagID, segmentID), body)
 }

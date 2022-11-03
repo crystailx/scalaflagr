@@ -1,4 +1,4 @@
-package io.github.crystailx.scalaflagr.json.jackson
+package crystailx.scalaflagr.json.jackson
 
 import com.fasterxml.jackson.core.Version
 import com.fasterxml.jackson.databind.{ JsonDeserializer, JsonSerializer }

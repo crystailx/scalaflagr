@@ -1,4 +1,6 @@
-package io.github.crystailx.scalaflagr.data
+package crystailx.scalaflagr.data
+
+import crystailx.scalaflagr.json.Decoder
 
 case class EvalResult(
   flagID: Option[Long] = None,

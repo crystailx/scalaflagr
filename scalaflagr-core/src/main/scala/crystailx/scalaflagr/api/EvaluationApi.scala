@@ -1,19 +1,24 @@
 package crystailx.scalaflagr.api
 
-import crystailx.scalaflagr.RequestBuilder
-import crystailx.scalaflagr.data.{ EvalContext, EvaluationBatchRequest }
+import crystailx.scalaflagr.RequestHandler
+import crystailx.scalaflagr.data.{
+  EvalContext,
+  EvalResult,
+  EvaluationBatchRequest,
+  EvaluationBatchResponse
+}
 
 trait EvaluationApi {
-  import RequestBuilder._
+  import RequestHandler._
 
   def evaluate(
     context: EvalContext
-  ): RequestBuilder[EvalContext] =
+  ): RequestHandler[EvalContext, EvalResult] =
     post("/evaluation", context)
 
   def batchEvaluate(
     context: EvaluationBatchRequest
-  ): RequestBuilder[EvaluationBatchRequest] =
+  ): RequestHandler[EvaluationBatchRequest, EvaluationBatchResponse] =
     post("/evaluation/batch", context)
 
 }

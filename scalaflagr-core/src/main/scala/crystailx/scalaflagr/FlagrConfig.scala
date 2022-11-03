@@ -1,10 +1,10 @@
 package crystailx.scalaflagr
 
-import crystailx.scalaflagr.auth.{ BasicAuthConfig, HeaderAuthConfig }
+import crystailx.scalaflagr.auth.{ BasicAuthConfig, HeaderIdentifierConfig }
 
 case class FlagrConfig(
   host: String = "http://localhost:18000",
   basePath: String = "/api/v1",
-  headerAuth: Option[HeaderAuthConfig] = None,
+  headerIdentifier: Option[HeaderIdentifierConfig] = None,
   basicAuth: Option[BasicAuthConfig] = None
 )
