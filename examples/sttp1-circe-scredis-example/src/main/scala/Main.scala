@@ -92,6 +92,11 @@ object Main {
     } yield (isEnabled, variant, attachment)
     val result = Await.result(evaluation, Duration.Inf)
     println(result)
+    val finding = client.execute {
+      findFlags(findFlagsParam key "test-flag")
+    }
+    val found = Await.result(finding, Duration.Inf)
+    println(found)
     System.exit(0)
   }
 

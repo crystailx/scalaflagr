@@ -1,6 +1,6 @@
 package crystailx.scalaflagr.api
 
-import crystailx.scalaflagr.RequestHandler
+import crystailx.scalaflagr.{ BodyRequestHandler, NoBodyRequestHandler, RequestHandler }
 import crystailx.scalaflagr.data._
 
 import scala.language.implicitConversions
@@ -10,36 +10,36 @@ trait FlagApi {
   private val apiBasePath: String = "/flags"
   import RequestHandler._
 
-  def createFlag(flagRequest: CreateFlagRequest): RequestHandler[CreateFlagRequest, Flag] =
+  def createFlag(flagRequest: CreateFlagRequest): BodyRequestHandler[CreateFlagRequest, Flag] =
     post(apiBasePath, flagRequest)
 
-  def deleteFlag(flagID: Long): RequestHandler[Nothing, Unit] =
+  def deleteFlag(flagID: Long): NoBodyRequestHandler[Unit] =
     delete(s"$apiBasePath/$flagID")
 
-  def findFlags(param: FindFlagsParam): RequestHandler[Nothing, List[Flag]] =
+  def findFlags(param: FindFlagsParam): NoBodyRequestHandler[List[Flag]] =
     get(apiBasePath, buildParamsMap(param))
 
-  def flag(flagID: Long): RequestHandler[Nothing, Flag] =
+  def flag(flagID: Long): NoBodyRequestHandler[Flag] =
     get(s"$apiBasePath/$flagID")
 
-  def flagEntityTypes: RequestHandler[Nothing, List[String]] =
+  def flagEntityTypes: NoBodyRequestHandler[List[String]] =
     get(s"$apiBasePath/entity_types")
 
-  def flagSnapshots(flagID: Long): RequestHandler[Nothing, List[FlagSnapshot]] =
+  def flagSnapshots(flagID: Long): NoBodyRequestHandler[List[FlagSnapshot]] =
     get(s"$apiBasePath/$flagID/snapshots")
 
   def updateFlag(
     flagID: Long,
     flagRequest: UpdateFlagRequest
-  ): RequestHandler[UpdateFlagRequest, Flag] =
+  ): BodyRequestHandler[UpdateFlagRequest, Flag] =
     put(s"$apiBasePath/$flagID", flagRequest)
 
-  def restoreFlag(flagID: Long): RequestHandler[Nothing, Flag] =
+  def restoreFlag(flagID: Long): NoBodyRequestHandler[Flag] =
     put(s"$apiBasePath/$flagID/restore")
 
   def enableFlag(
     flagID: Long,
     flagRequest: EnableFlagRequest
-  ): RequestHandler[EnableFlagRequest, Flag] =
+  ): BodyRequestHandler[EnableFlagRequest, Flag] =
     put(s"$apiBasePath/$flagID/enabled", flagRequest)
 }

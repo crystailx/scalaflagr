@@ -1,6 +1,6 @@
 package crystailx.scalaflagr.api
 
-import crystailx.scalaflagr.RequestHandler
+import crystailx.scalaflagr.{ BodyRequestHandler, RequestHandler }
 import crystailx.scalaflagr.data.{
   EvalContext,
   EvalResult,
@@ -13,12 +13,12 @@ trait EvaluationApi {
 
   def evaluate(
     context: EvalContext
-  ): RequestHandler[EvalContext, EvalResult] =
+  ): BodyRequestHandler[EvalContext, EvalResult] =
     post("/evaluation", context)
 
   def batchEvaluate(
     context: EvaluationBatchRequest
-  ): RequestHandler[EvaluationBatchRequest, EvaluationBatchResponse] =
+  ): BodyRequestHandler[EvaluationBatchRequest, EvaluationBatchResponse] =
     post("/evaluation/batch", context)
 
 }

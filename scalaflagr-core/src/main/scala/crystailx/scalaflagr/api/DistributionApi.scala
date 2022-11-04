@@ -1,6 +1,6 @@
 package crystailx.scalaflagr.api
 
-import crystailx.scalaflagr.RequestHandler
+import crystailx.scalaflagr.{ BodyRequestHandler, NoBodyRequestHandler, RequestHandler }
 import crystailx.scalaflagr.data.{ Distribution, UpdateDistributionsRequest }
 
 import scala.language.implicitConversions
@@ -14,13 +14,13 @@ trait DistributionApi {
   def findDistributions(
     flagID: Long,
     segmentID: Long
-  ): RequestHandler[Nothing, List[Distribution]] =
+  ): NoBodyRequestHandler[List[Distribution]] =
     get(apiBasePath format (flagID, segmentID))
 
   def updateDistributions(
     flagID: Long,
     segmentID: Long,
     body: UpdateDistributionsRequest
-  ): RequestHandler[UpdateDistributionsRequest, List[Distribution]] =
+  ): BodyRequestHandler[UpdateDistributionsRequest, List[Distribution]] =
     put(apiBasePath format (flagID, segmentID), body)
 }

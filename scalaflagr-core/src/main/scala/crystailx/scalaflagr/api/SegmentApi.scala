@@ -1,6 +1,6 @@
 package crystailx.scalaflagr.api
 
-import crystailx.scalaflagr.RequestHandler
+import crystailx.scalaflagr.{ BodyRequestHandler, NoBodyRequestHandler, RequestHandler }
 import crystailx.scalaflagr.data.{
   CreateSegmentRequest,
   ReorderSegmentRequest,
@@ -15,26 +15,26 @@ trait SegmentApi {
   def createSegment(
     flagID: Long,
     body: CreateSegmentRequest
-  ): RequestHandler[CreateSegmentRequest, Segment] =
+  ): BodyRequestHandler[CreateSegmentRequest, Segment] =
     post(apiBasePath format flagID, body)
 
-  def deleteSegment(flagID: Long, segmentID: Long): RequestHandler[Nothing, Unit] =
+  def deleteSegment(flagID: Long, segmentID: Long): NoBodyRequestHandler[Unit] =
     delete(s"$apiBasePath/$segmentID" format flagID)
 
-  def findSegments(flagID: Long): RequestHandler[Nothing, List[Segment]] =
+  def findSegments(flagID: Long): NoBodyRequestHandler[List[Segment]] =
     get(apiBasePath format flagID)
 
   def updateSegment(
     flagID: Long,
     segmentID: Long,
     body: UpdateSegmentRequest
-  ): RequestHandler[UpdateSegmentRequest, Segment] =
+  ): BodyRequestHandler[UpdateSegmentRequest, Segment] =
     put(s"$apiBasePath/$segmentID" format flagID, body)
 
   def reorderSegments(
     flagID: Long,
     body: ReorderSegmentRequest
-  ): RequestHandler[ReorderSegmentRequest, Unit] =
+  ): BodyRequestHandler[ReorderSegmentRequest, Unit] =
     put(s"$apiBasePath/reorder" format flagID, body)
 
 }

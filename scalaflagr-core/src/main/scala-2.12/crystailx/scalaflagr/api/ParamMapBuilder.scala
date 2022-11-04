@@ -1,8 +1,8 @@
 package crystailx.scalaflagr.api
 
 import shapeless.ops.hlist.ToTraversable
-import shapeless.{ HList, LabelledGeneric }
 import shapeless.ops.record.Keys
+import shapeless.{ HList, LabelledGeneric }
 
 trait ParamMapBuilder {
 
@@ -12,8 +12,13 @@ trait ParamMapBuilder {
     ts: ToTraversable.Aux[R, List, Symbol]
   ): Map[String, String] = {
     val fieldNames = keys().toList.map(_.name)
-    val values = params.productIterator.toList.map(_.toString)
-    Map(fieldNames zip values: _*)
+    val values = params.productIterator.toList
+    val zipped = fieldNames zip values filterNot (_._2 == None) map {
+      case (str, value: Option[_]) =>
+        str -> value.fold("")(_.toString)
+      case (str, value) => str -> value.toString
+    }
+    Map(zipped: _*)
   }
 
 }
