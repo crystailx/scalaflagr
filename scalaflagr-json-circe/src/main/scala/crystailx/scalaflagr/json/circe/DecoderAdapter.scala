@@ -9,7 +9,7 @@ import java.time.Instant
 
 trait DecoderAdapter extends BuiltInDecoders[CirceDecoder] {
 
-  implicit def decoder[T: CirceDecoder]: Decoder[T] =
+  implicit def decoderAdapter[T: CirceDecoder]: Decoder[T] =
     new Decoder[T] {
 
       override def decode(value: RawValue): T =

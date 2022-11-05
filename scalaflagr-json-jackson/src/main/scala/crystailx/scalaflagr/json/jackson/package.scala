@@ -32,6 +32,8 @@ package object jackson extends EncoderAdapter with DecoderAdapter {
   mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
   mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
   mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
+  mapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true)
+  mapper.configure(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES, true)
   mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
   mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
   mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)

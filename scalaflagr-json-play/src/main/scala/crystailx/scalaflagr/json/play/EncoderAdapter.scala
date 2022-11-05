@@ -8,7 +8,7 @@ import java.time.Instant
 
 trait EncoderAdapter extends BuiltInEncoders[PlayEncoder] {
 
-  implicit def encoder[T](implicit encoder: PlayEncoder[T]): Encoder[T] = (body: T) =>
+  implicit def encoderAdapter[T](implicit encoder: PlayEncoder[T]): Encoder[T] = (body: T) =>
     encoder.writes(body).toString().getBytes
 
   // some default encoders to avoid boilerplate
