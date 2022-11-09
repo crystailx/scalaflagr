@@ -11,6 +11,7 @@ import com.softwaremill.sttp.{
   StatusCodes,
   SttpBackend
 }
+import crystailx.scalaflagr.auth.{ BasicAuthConfig, HeaderIdentifierConfig }
 import crystailx.scalaflagr.data.RawValue
 import crystailx.scalaflagr.{ FlagrConfig, FlagrRequest }
 import org.scalamock.scalatest.MockFactory
@@ -18,6 +19,7 @@ import org.scalatest.flatspec.FixtureAnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{ Assertion, Outcome }
 
+import java.util.Base64
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{ Await, Future }
@@ -67,6 +69,14 @@ trait SttpHttpClientFixtureBase extends FixtureAnyFlatSpec with Matchers with Mo
 
   val hasExtraHeaders: RequestMatcher =
     _.headers.toSet.contains(testExtraHeader._1, testExtraHeader._2)
+
+  def hasBasicAuth(username: String, password: String): RequestMatcher = {
+    val token = Base64.getEncoder.encodeToString(s"$username:$password".getBytes)
+    _.headers.toSet.contains("Authorization", s"Basic $token")
+  }
+
+  def hasIdentifier(field: String, user: String): RequestMatcher =
+    _.headers.toSet.contains(field, user)
 
   implicit class RichRequestMatch(matcher: RequestMatcher) {
 
@@ -169,4 +179,172 @@ trait SttpHttpClientFixtureBase extends FixtureAnyFlatSpec with Matchers with Mo
       FlagrRequest(specHttpMethod, "/test/builder", headers = Map(testExtraHeader))
     )
   }
+
+  it must s"build request with basic auth headers using ${expectedHttpMethod.m} method when global setting exists" in {
+    fp =>
+      val username = "test-user"
+      val password = "1234567890"
+      implicit val backend: SttpBackend[Future, Nothing] = fp.backend
+      val client =
+        new SttpHttpClient(FlagrConfig(basicAuth = Some(BasicAuthConfig(username, password))))
+      backend.send[RawValue] _ expects where {
+        matchesMethod and matchesBuilderPath and hasBasicAuth(username, password)
+      } returning Future(Response.ok(testRawBody))
+
+      noException must be thrownBy client.send(
+        FlagrRequest(specHttpMethod, "/test/builder")
+      )
+  }
+
+  it must s"build request with basic auth headers provided in request using ${expectedHttpMethod.m} method even when global setting exists" in {
+    fp =>
+      val username = "test-user"
+      val password = "1234567890"
+      implicit val backend: SttpBackend[Future, Nothing] = fp.backend
+      val client =
+        new SttpHttpClient(FlagrConfig(basicAuth = Some(BasicAuthConfig("default", "default"))))
+      backend.send[RawValue] _ expects where {
+        matchesMethod and matchesBuilderPath and hasBasicAuth(username, password)
+      } returning Future(Response.ok(testRawBody))
+
+      noException must be thrownBy client.send(
+        FlagrRequest(
+          specHttpMethod,
+          "/test/builder",
+          authMethod = Some(AuthMethod.Basic(username, password))
+        )
+      )
+  }
+
+  it must s"build request with basic auth headers provided in request using ${expectedHttpMethod.m} method no global setting exists" in {
+    fp =>
+      val username = "test-user"
+      val password = "1234567890"
+      val SttpBackendClient(client, backend) = fp
+      backend.send[RawValue] _ expects where {
+        matchesMethod and matchesBuilderPath and hasBasicAuth(username, password)
+      } returning Future(Response.ok(testRawBody))
+
+      noException must be thrownBy client.send(
+        FlagrRequest(
+          specHttpMethod,
+          "/test/builder",
+          authMethod = Some(AuthMethod.Basic(username, password))
+        )
+      )
+  }
+
+  it must s"throw an exception when JWT auth methods provided in request using ${expectedHttpMethod.m} method" in {
+    fp =>
+      an[Exception] must be thrownBy fp.client.send(
+        FlagrRequest(
+          specHttpMethod,
+          "/test/builder",
+          authMethod = Some(AuthMethod.JWT("token"))
+        )
+      )
+  }
+
+  it must s"build request with no authorization headers when NoAuth method is provided in request using ${expectedHttpMethod.m} method" in {
+    fp =>
+      an[Exception] must be thrownBy fp.client.send(
+        FlagrRequest(
+          specHttpMethod,
+          "/test/builder",
+          headers = Map("Authorization" -> "Bearer 123"),
+          authMethod = Some(AuthMethod.NoAuth)
+        )
+      )
+  }
+
+  it must s"build request with identifiers in request using ${expectedHttpMethod.m} method when global setting exists" in {
+    fp =>
+      val user = "test-user"
+      val field = "X-User"
+      implicit val backend: SttpBackend[Future, Nothing] = fp.backend
+      val client =
+        new SttpHttpClient(
+          FlagrConfig(headerIdentifier = Some(HeaderIdentifierConfig(field, Some(user))))
+        )
+      backend.send[RawValue] _ expects where {
+        matchesMethod and matchesBuilderPath and hasIdentifier(field, user)
+      } returning Future(Response.ok(testRawBody))
+      noException must be thrownBy client.send(FlagrRequest(specHttpMethod, "/test/builder"))
+  }
+
+  it must s"build request with identifiers provided in request using ${expectedHttpMethod.m} method even when global setting exists" in {
+    fp =>
+      val user = "test-user"
+      val field = "X-User"
+      implicit val backend: SttpBackend[Future, Nothing] = fp.backend
+      val client =
+        new SttpHttpClient(
+          FlagrConfig(headerIdentifier = Some(HeaderIdentifierConfig("default", Some("default"))))
+        )
+      backend.send[RawValue] _ expects where {
+        matchesMethod and matchesBuilderPath and hasIdentifier(field, user)
+      } returning Future(Response.ok(testRawBody))
+      noException must be thrownBy client.send(
+        FlagrRequest(
+          specHttpMethod,
+          "/test/builder",
+          identifier = Some(Identifier(user, Some(field)))
+        )
+      )
+  }
+
+  it must s"build request with identifier provided in request and global identifier field using ${expectedHttpMethod.m} method" in {
+    fp =>
+      val user = "test-user"
+      val field = "X-User"
+      implicit val backend: SttpBackend[Future, Nothing] = fp.backend
+      val client =
+        new SttpHttpClient(
+          FlagrConfig(headerIdentifier = Some(HeaderIdentifierConfig(field, None)))
+        )
+      backend.send[RawValue] _ expects where {
+        matchesMethod and matchesBuilderPath and hasIdentifier(field, user)
+      } returning Future(Response.ok(testRawBody))
+      noException must be thrownBy client.send(
+        FlagrRequest(
+          specHttpMethod,
+          "/test/builder",
+          identifier = Some(Identifier(user))
+        )
+      )
+  }
+
+  it must s"build request with identifiers provided in request using ${expectedHttpMethod.m} method when no global setting exists" in {
+    fp =>
+      val user = "test-user"
+      val field = "X-User"
+      val SttpBackendClient(client, backend) = fp
+      backend.send[RawValue] _ expects where {
+        matchesMethod and matchesBuilderPath and hasIdentifier(field, user)
+      } returning Future(Response.ok(testRawBody))
+      noException must be thrownBy client.send(
+        FlagrRequest(
+          specHttpMethod,
+          "/test/builder",
+          identifier = Some(Identifier(user, Some(field)))
+        )
+      )
+  }
+
+  it must s"build request with identifier provided in request and default field using ${expectedHttpMethod.m} method" in {
+    fp =>
+      val user = "test-user"
+      val SttpBackendClient(client, backend) = fp
+      backend.send[RawValue] _ expects where {
+        matchesMethod and matchesBuilderPath and hasIdentifier("X-Email", user)
+      } returning Future(Response.ok(testRawBody))
+      noException must be thrownBy client.send(
+        FlagrRequest(
+          specHttpMethod,
+          "/test/builder",
+          identifier = Some(Identifier(user, None))
+        )
+      )
+  }
+
 }
