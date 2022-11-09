@@ -8,7 +8,7 @@ import scala.util.Try
 
 trait DecoderAdapter {
 
-  implicit def decoder[T: JavaTypeable]: Decoder[T] = new Decoder[T] {
+  implicit def decoderAdapter[T: JavaTypeable]: Decoder[T] = new Decoder[T] {
     override def decode(value: RawValue): T = mapper.readValue[T](value)
 
     override def decodeSafe(value: RawValue): Either[Throwable, T] =

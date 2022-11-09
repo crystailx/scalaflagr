@@ -9,7 +9,7 @@ import scala.util.Try
 
 trait DecoderAdapter extends BuiltInDecoders[PlayDecoder] {
 
-  implicit def decoder[T: PlayDecoder]: Decoder[T] =
+  implicit def decoderAdapter[T: PlayDecoder]: Decoder[T] =
     new Decoder[T] {
       override def decode(value: RawValue): T = Json.parse(value).as[T]
 

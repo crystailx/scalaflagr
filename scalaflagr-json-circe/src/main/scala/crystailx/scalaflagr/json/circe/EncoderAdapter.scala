@@ -9,7 +9,7 @@ import java.time.Instant
 
 trait EncoderAdapter extends BuiltInEncoders[CirceEncoder] {
 
-  implicit def encoder[T](implicit encoder: CirceEncoder[T]): Encoder[T] =
+  implicit def encoderAdapter[T](implicit encoder: CirceEncoder[T]): Encoder[T] =
     (body: T) => encoder.apply(body).noSpaces.getBytes
 
   // some default encoders to avoid boilerplate

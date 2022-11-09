@@ -8,6 +8,8 @@ import org.scalatest.matchers.must.Matchers
 
 trait CodecBase extends AnyFlatSpec with Matchers {
 
+  protected val jsonLibraryName: String
+
   private val flagJson: String =
     """{
       |	"dataRecordsEnabled": false,
@@ -67,7 +69,7 @@ trait CodecBase extends AnyFlatSpec with Matchers {
 
   protected implicit val attachmentAdaptedDecoder: Decoder[Attachment]
   protected implicit val attachmentAdaptedEncoder: Encoder[Attachment]
-  it must "decode Flag with built in decoders" in {
+  it must s"decode Flag with built in $jsonLibraryName decoders" in {
     val decoded = flagAdaptedDecoder.decodeSafe(flagJson.getBytes).value
     decoded.id mustBe 1
     decoded.key mustBe "flag-key"
@@ -109,7 +111,7 @@ trait CodecBase extends AnyFlatSpec with Matchers {
     distribution.variantKey mustBe "v1"
   }
 
-  it must "encode hidden(private/protected) fields" in {
+  it must s"encode hidden(private/protected) fields using $jsonLibraryName" in {
     val variant = Variant(
       1,
       key = "vKey",
