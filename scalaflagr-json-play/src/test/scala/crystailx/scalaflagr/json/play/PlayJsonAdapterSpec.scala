@@ -8,4 +8,5 @@ class PlayJsonAdapterSpec extends AdapterBase[JsResultException] {
   implicit val testDataDecoder: PlayDecoder[TestData] = Json.reads
   override val encoder: Encoder[TestData] = implicitly
   override val decoder: Decoder[TestData] = implicitly
+  override protected lazy val jsonLibraryName: String = "play"
 }

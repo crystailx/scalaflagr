@@ -10,4 +10,5 @@ class CodecSpec extends CodecBase {
   override protected val variantAdaptedDecoder: Encoder[Variant] = encoderAdapter(variantEncoder)
   override protected val attachmentAdaptedDecoder: Decoder[Attachment] = implicitly
   override protected val attachmentAdaptedEncoder: Encoder[Attachment] = implicitly
+  override protected lazy val jsonLibraryName: String = "play"
 }

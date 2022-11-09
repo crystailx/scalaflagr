@@ -11,6 +11,9 @@ object Dependencies {
   private val redisVersion = "2.4.3"
   private val playJsonVersion = "2.9.3"
   private val jacksonVersion = "2.13.4"
+  private val scalatestVersion = "3.2.14"
+  private val scalacticVersion = scalatestVersion
+  private val scalamockVersion = "5.2.0"
 
   def log: Seq[ModuleID] = Seq(
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion,
@@ -53,10 +56,9 @@ object Dependencies {
 
   def test: Seq[ModuleID] =
     Seq(
-      "org.scalatest" %% "scalatest" % "3.2.14",
-      "org.scalactic" %% "scalactic" % "3.2.14",
-      "org.mock-server" % "mockserver-netty" % "5.14.0",
-      "org.mockito" % "mockito-core" % "4.8.0",
-      "org.mockito" %% "mockito-scala" % "1.17.12"
+      "org.scalatest" %% "scalatest" % scalatestVersion,
+      "org.scalactic" %% "scalactic" % scalacticVersion,
+      "org.scalamock" %% "scalamock" % scalamockVersion,
+      "org.mock-server" % "mockserver-netty" % "5.14.0"
     )
 }

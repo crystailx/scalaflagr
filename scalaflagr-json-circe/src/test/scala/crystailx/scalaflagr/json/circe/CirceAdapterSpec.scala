@@ -9,4 +9,5 @@ class CirceAdapterSpec extends AdapterBase[DecodingFailure] {
   implicit val testDataDecoder: CirceDecoder[TestData] = deriveDecoder
   override val encoder: Encoder[TestData] = implicitly
   override val decoder: Decoder[TestData] = implicitly
+  override protected lazy val jsonLibraryName: String = "circe"
 }
