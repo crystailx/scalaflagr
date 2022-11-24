@@ -69,6 +69,7 @@ class FlagrServiceSpec extends FixtureAnyFlatSpec with Matchers with LazyLogging
         EvalResult(
           flagKey = Some("matched"),
           segmentID = Some(1),
+          variantKey = Some("on"),
           variantAttachment = Some(value),
           timestamp = "2022-10-31T16:30:14Z"
         )

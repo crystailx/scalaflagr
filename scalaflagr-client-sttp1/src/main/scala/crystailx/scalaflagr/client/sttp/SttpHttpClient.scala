@@ -1,20 +1,20 @@
-package crystailx.scalaflagr.client
+package crystailx.scalaflagr.client.sttp
 
 import com.softwaremill.sttp._
 import crystailx.scalaflagr.auth.{ BasicAuthConfig, HeaderIdentifierConfig }
 import crystailx.scalaflagr.client.AuthMethod.{ Basic, JWT, NoAuth }
+import crystailx.scalaflagr.client.{ AuthMethod, HttpClient, HttpMethod, Identifier }
 import crystailx.scalaflagr.data.RawValue
+import crystailx.scalaflagr.effect.{ Functor, RichImplicitFunctor }
 import crystailx.scalaflagr.{ FlagrConfig, FlagrRequest }
 
-import scala.concurrent.{ ExecutionContext, Future }
-
-class SttpHttpClient(override protected val config: FlagrConfig)(implicit
-  protected val sttpBackend: SttpBackend[Future, Nothing],
-  protected val ec: ExecutionContext
-) extends HttpClient[Future] {
+case class SttpHttpClient[F[_], S](override protected val config: FlagrConfig)(implicit
+  protected val sttpBackend: SttpBackend[F, S],
+  functor: Functor[F]
+) extends HttpClient[F] {
   import config._
 
-  override def send(request: FlagrRequest): Future[RawValue] = {
+  override def send(request: FlagrRequest): F[RawValue] = {
     import request._
     val uri = uri"${s"$host$basePath$path"}".params(params)
     val sttpRequest = method match {

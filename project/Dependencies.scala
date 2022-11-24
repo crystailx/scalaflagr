@@ -8,6 +8,7 @@ object Dependencies {
   private val sttp1Version = "1.7.2"
   private val akkaStreamVersion = "2.6.20"
   private val catsVersion = "2.8.0"
+  private val twitterVersion = "22.7.0"
   private val redisVersion = "2.4.3"
   private val playJsonVersion = "2.9.3"
   private val jacksonVersion = "2.13.4"
@@ -48,6 +49,10 @@ object Dependencies {
 
   def cats: Seq[ModuleID] = Seq(
     "org.typelevel" %% "cats-core" % catsVersion
+  )
+
+  def twitter: Seq[ModuleID] = Seq(
+    "com.twitter" %% "util-core" % twitterVersion
   )
 
   def redis: Seq[ModuleID] = Seq(

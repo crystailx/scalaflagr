@@ -1,4 +1,4 @@
-package crystailx.scalaflagr.client
+package crystailx.scalaflagr.client.sttp
 
 import com.softwaremill.sttp
 import com.softwaremill.sttp.{
@@ -12,6 +12,7 @@ import com.softwaremill.sttp.{
   SttpBackend
 }
 import crystailx.scalaflagr.auth.{ BasicAuthConfig, HeaderIdentifierConfig }
+import crystailx.scalaflagr.client.{ AuthMethod, HttpMethod, Identifier }
 import crystailx.scalaflagr.data.RawValue
 import crystailx.scalaflagr.{ FlagrConfig, FlagrRequest }
 import org.scalamock.scalatest.MockFactory
@@ -26,7 +27,10 @@ import scala.concurrent.{ Await, Future }
 
 trait SttpHttpClientFixtureBase extends FixtureAnyFlatSpec with Matchers with MockFactory {
 
-  case class SttpBackendClient(client: SttpHttpClient, backend: SttpBackend[Future, Nothing]) {
+  case class SttpBackendClient(
+    client: SttpHttpClient[Future, Nothing],
+    backend: SttpBackend[Future, Nothing]
+  ) {
 
     def backendSend: Request[RawValue, Nothing] => Future[Response[RawValue]] =
       backend.send[RawValue]
@@ -37,8 +41,8 @@ trait SttpHttpClientFixtureBase extends FixtureAnyFlatSpec with Matchers with Mo
   protected val specHttpMethod: HttpMethod
 
   override protected def withFixture(test: OneArgTest): Outcome = {
-    val mockedBackend = mock[SttpBackend[Future, Nothing]]
-    test(SttpBackendClient(new SttpHttpClient(FlagrConfig())(mockedBackend, global), mockedBackend))
+    implicit val mockedBackend: SttpBackend[Future, Nothing] = mock[SttpBackend[Future, Nothing]]
+    test(SttpBackendClient(SttpHttpClient[Future, Nothing](FlagrConfig()), mockedBackend))
   }
 
   override type FixtureParam = SttpBackendClient
@@ -136,7 +140,7 @@ trait SttpHttpClientFixtureBase extends FixtureAnyFlatSpec with Matchers with Mo
   behavior of "request builder"
 
   def extractor(fp: SttpBackendClient)(
-    oneTest: (SttpHttpClient, SttpBackend[Future, Nothing]) => Unit
+    oneTest: (SttpHttpClient[Future, Nothing], SttpBackend[Future, Nothing]) => Unit
   ): Unit = oneTest(fp.client, fp.backend)
 
   it must s"build request without body using ${expectedHttpMethod.m} method" in { fp =>
@@ -185,8 +189,9 @@ trait SttpHttpClientFixtureBase extends FixtureAnyFlatSpec with Matchers with Mo
       val username = "test-user"
       val password = "1234567890"
       implicit val backend: SttpBackend[Future, Nothing] = fp.backend
-      val client =
-        new SttpHttpClient(FlagrConfig(basicAuth = Some(BasicAuthConfig(username, password))))
+      val client = SttpHttpClient[Future, Nothing](
+        FlagrConfig(basicAuth = Some(BasicAuthConfig(username, password)))
+      )
       backend.send[RawValue] _ expects where {
         matchesMethod and matchesBuilderPath and hasBasicAuth(username, password)
       } returning Future(Response.ok(testRawBody))
@@ -201,8 +206,9 @@ trait SttpHttpClientFixtureBase extends FixtureAnyFlatSpec with Matchers with Mo
       val username = "test-user"
       val password = "1234567890"
       implicit val backend: SttpBackend[Future, Nothing] = fp.backend
-      val client =
-        new SttpHttpClient(FlagrConfig(basicAuth = Some(BasicAuthConfig("default", "default"))))
+      val client = SttpHttpClient[Future, Nothing](
+        FlagrConfig(basicAuth = Some(BasicAuthConfig("default", "default")))
+      )
       backend.send[RawValue] _ expects where {
         matchesMethod and matchesBuilderPath and hasBasicAuth(username, password)
       } returning Future(Response.ok(testRawBody))
@@ -262,10 +268,9 @@ trait SttpHttpClientFixtureBase extends FixtureAnyFlatSpec with Matchers with Mo
       val user = "test-user"
       val field = "X-User"
       implicit val backend: SttpBackend[Future, Nothing] = fp.backend
-      val client =
-        new SttpHttpClient(
-          FlagrConfig(headerIdentifier = Some(HeaderIdentifierConfig(field, Some(user))))
-        )
+      val client = SttpHttpClient[Future, Nothing](
+        FlagrConfig(headerIdentifier = Some(HeaderIdentifierConfig(field, Some(user))))
+      )
       backend.send[RawValue] _ expects where {
         matchesMethod and matchesBuilderPath and hasIdentifier(field, user)
       } returning Future(Response.ok(testRawBody))
@@ -277,10 +282,9 @@ trait SttpHttpClientFixtureBase extends FixtureAnyFlatSpec with Matchers with Mo
       val user = "test-user"
       val field = "X-User"
       implicit val backend: SttpBackend[Future, Nothing] = fp.backend
-      val client =
-        new SttpHttpClient(
-          FlagrConfig(headerIdentifier = Some(HeaderIdentifierConfig("default", Some("default"))))
-        )
+      val client = SttpHttpClient[Future, Nothing](
+        FlagrConfig(headerIdentifier = Some(HeaderIdentifierConfig("default", Some("default"))))
+      )
       backend.send[RawValue] _ expects where {
         matchesMethod and matchesBuilderPath and hasIdentifier(field, user)
       } returning Future(Response.ok(testRawBody))
@@ -298,10 +302,9 @@ trait SttpHttpClientFixtureBase extends FixtureAnyFlatSpec with Matchers with Mo
       val user = "test-user"
       val field = "X-User"
       implicit val backend: SttpBackend[Future, Nothing] = fp.backend
-      val client =
-        new SttpHttpClient(
-          FlagrConfig(headerIdentifier = Some(HeaderIdentifierConfig(field, None)))
-        )
+      val client = SttpHttpClient[Future, Nothing](
+        FlagrConfig(headerIdentifier = Some(HeaderIdentifierConfig(field, None)))
+      )
       backend.send[RawValue] _ expects where {
         matchesMethod and matchesBuilderPath and hasIdentifier(field, user)
       } returning Future(Response.ok(testRawBody))

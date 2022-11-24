@@ -14,7 +14,7 @@ import crystailx.scalaflagr.json.{ Decoder, Encoder }
 
 import scala.language.{ existentials, postfixOps }
 
-class FlagrService[K, F[_]](client: FlagrClient[F], cacher: Cacher[K, F])(implicit
+case class FlagrService[K, F[_]](client: FlagrClient[F], cacher: Cacher[K, F])(implicit
   keyCreator: CacheKeyCreator[K],
   functor: Functor[F],
   monad: Monad[F],
@@ -50,10 +50,18 @@ class FlagrService[K, F[_]](client: FlagrClient[F], cacher: Cacher[K, F])(implic
     }
   }
 
+  /** This checks whether the flag is enabled.
+    * It does not guarantee the user matches any segments
+    * There'll always be a segment if the flag is enabled, even when the segment constraint doesn't match
+    * The variantKey only exists when the user matches a segment and also has been rolled out
+    * When no distribution is set on the segment, variantKey will be empty
+    * @param context The evaluation context
+    * @return boolean
+    */
   def isEnabled(context: FlagrContext): F[Boolean] = {
     val result = evaluate(context)
     result.map { eval =>
-      (eval.flagKey contains context.flagKey) && (eval.segmentID nonEmpty) // There'll always be a segment if the flag is enabled, even when the segment constraint doesn't match
+      (eval.flagKey contains context.flagKey) && (eval.segmentID nonEmpty) && (eval.variantKey nonEmpty)
     }
   }
 
@@ -68,5 +76,19 @@ class FlagrService[K, F[_]](client: FlagrClient[F], cacher: Cacher[K, F])(implic
     getVariant(context).map(
       _.getOrElse(throw new Exception("No matched variant"))
     )
+
+}
+
+object FlagrService {
+
+  def apply[K, F[_]](client: FlagrClient[F])(implicit
+    keyCreator: CacheKeyCreator[K],
+    functor: Functor[F],
+    monad: Monad[F],
+    applicative: Applicative[F],
+    encoder: Encoder[EvalContext],
+    decoder: Decoder[EvalResult]
+  ): FlagrService[K, F] =
+    new FlagrService[K, F](client, cache.nocache.NoCache())
 
 }

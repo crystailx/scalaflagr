@@ -8,7 +8,7 @@ import scredis.serialization.{ Reader, Writer }
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ ExecutionContext, Future }
 
-class RedisCache(
+case class RedisCache(
   redisServer: StringCommands with KeyCommands,
   ttlOpt: Option[FiniteDuration] = None
 )(implicit
