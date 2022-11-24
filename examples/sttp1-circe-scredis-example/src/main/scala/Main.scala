@@ -18,7 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{ Await, Future }
 
-object Main {
+object  Main {
 
   import io.circe.generic.auto._
 

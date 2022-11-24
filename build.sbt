@@ -6,7 +6,7 @@ lazy val scala212 = "2.12.17"
 lazy val scala211 = "2.11.12"
 lazy val supportedScalaVersions = Seq(scala213, scala212 /*, scala211*/ )
 ThisBuild / organization := "io.github.crystailx"
-ThisBuild / version := "1.2.3"
+ThisBuild / version := "1.3.0"
 ThisBuild / scalaVersion := scala213
 ThisBuild / crossScalaVersions := supportedScalaVersions
 ThisBuild / trackInternalDependencies := TrackLevel.TrackAlways
@@ -59,6 +59,12 @@ lazy val catsEffect = (project in file("scalaflagr-effect-cats"))
   .settings(libraryDependencies ++= Dependencies.cats)
   .dependsOn(core)
 
+lazy val twitterEffect = (project in file("scalaflagr-effect-twitter"))
+  .settings(name := "scalaflagr-effect-twitter")
+  .settings(moduleSettings)
+  .settings(libraryDependencies ++= Dependencies.twitter)
+  .dependsOn(core)
+
 lazy val jsonCirce = (project in file("scalaflagr-json-circe"))
   .settings(name := "scalaflagr-json-circe")
   .settings(moduleSettings)
@@ -89,4 +95,4 @@ lazy val root = (project in file("."))
     crossScalaVersions := Nil,
     update / aggregate := false
   )
-  .aggregate(core, sttp1Client, catsEffect, jsonCirce, jsonPlay, jsonJackson, redisCache)
+  .aggregate(core, sttp1Client, catsEffect, twitterEffect, jsonCirce, jsonPlay, jsonJackson, redisCache)

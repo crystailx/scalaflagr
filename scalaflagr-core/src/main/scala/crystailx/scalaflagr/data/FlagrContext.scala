@@ -14,8 +14,8 @@ sealed trait FlagrContext {
 
 case class BasicContext(
   flagKey: String,
-  override val entityID: String = "anonymous",
-  override val entityType: String = "user"
+  override val entityID: String = "",
+  override val entityType: String = ""
 ) extends FlagrContext {
   override protected[scalaflagr] val entityContext: Option[RawValue] = None
 }
@@ -39,8 +39,8 @@ object EntityContext {
   def apply[T](
     flagKey: String,
     entityContext: T,
-    entityID: String = "anonymous",
-    entityType: String = "user"
+    entityID: String = "",
+    entityType: String = ""
   )(implicit encoder: Encoder[T]): EntityContext =
     new EntityContext(flagKey, Option(encoder.encode(entityContext)), entityID, entityType)
 

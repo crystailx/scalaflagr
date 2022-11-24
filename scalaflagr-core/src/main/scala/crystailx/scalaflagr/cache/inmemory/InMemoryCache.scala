@@ -8,7 +8,7 @@ import scala.collection.concurrent.TrieMap
 import scala.collection.mutable
 
 // This is for local testing, please do not use it in production environment.
-class InMemoryCache[K, F[_]](implicit
+case class InMemoryCache[K, F[_]]()(implicit
   applicative: Applicative[F]
 ) extends Cacher[K, F] {
 

@@ -3,7 +3,6 @@ package crystailx.scalaflagr.effect.cats
 import cats.{ Applicative => CatsApplicative, Functor => CatsFunctor, Monad => CatsMonad }
 import crystailx.scalaflagr.effect.{ Applicative, Functor, Monad }
 
-import scala.language.implicitConversions
 package object syntax {
 
   implicit def catsFunctor[F[_]](implicit functor: CatsFunctor[F]): Functor[F] =
