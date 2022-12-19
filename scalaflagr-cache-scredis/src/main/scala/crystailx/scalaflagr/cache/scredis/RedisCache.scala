@@ -1,4 +1,4 @@
-package crystailx.scalaflagr.cache.redis
+package crystailx.scalaflagr.cache.scredis
 
 import crystailx.scalaflagr.cache.Cacher
 import crystailx.scalaflagr.data.EvalResult

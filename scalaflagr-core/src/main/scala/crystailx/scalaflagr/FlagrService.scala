@@ -3,13 +3,8 @@ package crystailx.scalaflagr
 import com.typesafe.scalalogging.LazyLogging
 import crystailx.scalaflagr.cache.{ CacheKeyCreator, Cacher }
 import crystailx.scalaflagr.data.{ EvalContext, EvalResult, FlagrContext, Variant }
-import crystailx.scalaflagr.effect.{
-  Applicative,
-  Functor,
-  Monad,
-  RichImplicitFunctor,
-  RichImplicitMonad
-}
+import crystailx.scalaflagr.effect.{ Applicative, Functor, Monad }
+import crystailx.scalaflagr.effect.syntax._
 import crystailx.scalaflagr.json.{ Decoder, Encoder }
 
 import scala.language.{ existentials, postfixOps }
@@ -23,25 +18,14 @@ case class FlagrService[K, F[_]](client: FlagrClient[F], cacher: Cacher[K, F])(i
   decoder: Decoder[EvalResult]
 ) extends LazyLogging {
 
-  protected def createEvalContext(
-    context: FlagrContext
-  ): EvalContext =
-    EvalContext(
-      Some(context.entityID),
-      Some(context.entityType),
-      context.entityContext,
-      flagKey = Some(context.flagKey)
-    )
-
   protected def evaluate(
     context: FlagrContext
   ): F[EvalResult] = {
-    import context._
-    val key = keyCreator(flagKey, entityID, entityType, entityContext)
+    val key = keyCreator(context)
     cacher.get(key) flatMap { evalResult =>
       def fetcher: F[EvalResult] =
         client
-          .execute(crystailx.scalaflagr.api.evaluate(createEvalContext(context)))
+          .execute(crystailx.scalaflagr.api.evaluate(context.toEvalContext))
           .map { res =>
             cacher.set(key, res)
             res

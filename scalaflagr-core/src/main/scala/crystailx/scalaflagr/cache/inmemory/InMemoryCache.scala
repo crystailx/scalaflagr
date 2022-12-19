@@ -15,9 +15,10 @@ case class InMemoryCache[K, F[_]]()(implicit
   private val cache: mutable.Map[K, EvalResult] = new TrieMap[K, EvalResult]()
 
   override def set(key: K, evalResult: EvalResult): F[Unit] =
-    cache
-      .put(key, evalResult)
-      .fold(throw new Exception(s"Failed to set cache key: $key"))(_ => applicative.pure(()))
+    applicative.pure {
+      cache.put(key, evalResult)
+      ()
+    }
 
   override def get(key: K): F[Option[EvalResult]] =
     applicative.pure(cache.get(key))

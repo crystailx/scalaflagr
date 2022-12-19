@@ -3,7 +3,7 @@ version := "1.0.0"
 scalaVersion := "2.13.10"
 name := "sttp-circe-scredis-example"
 
-val scalaflagrVersion = "1.3.0-SNAPSHOT"
+val scalaflagrVersion = "1.3.1-SNAPSHOT"
 val sttp1Version = "1.7.2"
 val akkaStreamVersion = "2.7.0"
 resolvers +=

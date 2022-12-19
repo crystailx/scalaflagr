@@ -10,6 +10,14 @@ sealed trait FlagrContext {
   val entityType: String
 
   protected[scalaflagr] val entityContext: Option[RawValue]
+
+  def toEvalContext: EvalContext =
+    EvalContext(
+      Some(entityID),
+      Some(entityType),
+      entityContext,
+      flagKey = Some(flagKey)
+    )
 }
 
 case class BasicContext(

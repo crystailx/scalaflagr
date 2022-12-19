@@ -5,7 +5,8 @@ import crystailx.scalaflagr.auth.{ BasicAuthConfig, HeaderIdentifierConfig }
 import crystailx.scalaflagr.client.AuthMethod.{ Basic, JWT, NoAuth }
 import crystailx.scalaflagr.client.{ AuthMethod, HttpClient, HttpMethod, Identifier }
 import crystailx.scalaflagr.data.RawValue
-import crystailx.scalaflagr.effect.{ Functor, RichImplicitFunctor }
+import crystailx.scalaflagr.effect.Functor
+import crystailx.scalaflagr.effect.syntax.RichImplicitFunctor
 import crystailx.scalaflagr.{ FlagrConfig, FlagrRequest }
 
 case class SttpHttpClient[F[_], S](override protected val config: FlagrConfig)(implicit

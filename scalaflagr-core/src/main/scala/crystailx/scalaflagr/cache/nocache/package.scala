@@ -1,9 +1,9 @@
 package crystailx.scalaflagr.cache
 
-import crystailx.scalaflagr.data.RawValue
+import crystailx.scalaflagr.data.FlagrContext
 
 package object nocache {
 
   implicit val emptyCacheKey: CacheKeyCreator[String] =
-    (_: String, _: String, _: String, _: Option[RawValue]) => ""
+    (_: FlagrContext) => ""
 }

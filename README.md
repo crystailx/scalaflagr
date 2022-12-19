@@ -74,17 +74,29 @@ import crystailx.scalaflagr.cache.inmemory._
 val service = FlagrService(client, InMemoryCache())
 ```
 
-#### Redis Cache (Scredis)
+#### Scredis Cache
 ```sbt
 libraryDependencies += "io.github.crystailx" %% "scalaflagr-cache-scredis" % scalaflagrVersion
 ```
 ```scala
-import crystailx.scalaflagr.cache.redis._
+import crystailx.scalaflagr.cache.scredis._
 import scredis.RedisCluster
 import scala.concurrent.ExecutionContext.Implicits.global
 
 val cluster = RedisCluster()
 val service = FlagrService(client, RedisCache(cluster))
+```
+
+#### Scaffeine Cache
+```sbt
+libraryDependencies += "io.github.crystailx" %% "scalaflagr-cache-scaffeine" % scalaflagrVersion
+```
+```scala
+import crystailx.scalaflagr.cache.scaffeine._
+import com.github.blemale.scaffeine.Scaffeine
+
+val cacher = ScaffeineAsyncLoadingCache.builder(Scaffeine()).buildAsyncFuture
+val service = FlagrService(client, cacher)
 ```
 
 ### Supported JSON Libraries
@@ -138,7 +150,7 @@ import akka.util.ByteString
 import com.softwaremill.sttp.SttpBackend
 import com.softwaremill.sttp.akkahttp.AkkaHttpBackend
 import crystailx.scalaflagr.auth.BasicAuthConfig
-import crystailx.scalaflagr.cache.redis.{ RedisCache, _ }
+import crystailx.scalaflagr.cache.scredis.{ RedisCache, _ }
 import crystailx.scalaflagr.cache.simpleCacheKey
 import crystailx.scalaflagr.client.sttp.SttpHttpClient
 import crystailx.scalaflagr.data._
