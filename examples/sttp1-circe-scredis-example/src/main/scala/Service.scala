@@ -7,7 +7,7 @@ import crystailx.scalaflagr.cache.simpleCacheKey
 import crystailx.scalaflagr.client.sttp.SttpHttpClient
 import crystailx.scalaflagr.data._
 import crystailx.scalaflagr.json.circe._
-import crystailx.scalaflagr.cache.redis._
+import crystailx.scalaflagr.cache.scredis._
 import crystailx.scalaflagr.{ FlagrClient, FlagrConfig, FlagrService }
 import scredis.protocol.AuthConfig
 

@@ -1,4 +1,4 @@
-package crystailx.scalaflagr.cache.redis
+package crystailx.scalaflagr.cache.scredis
 
 import crystailx.scalaflagr.data.{ EvalResult, RawValue }
 import crystailx.scalaflagr.json.{ Decoder, Encoder }

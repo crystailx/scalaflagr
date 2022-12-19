@@ -7,10 +7,10 @@ import scala.concurrent.Future
 
 class TestSpec extends AnyFlatSpec {
   it must "create FlagrService with default cacher and cache key creator" in {
+    import crystailx.scalaflagr.cache.nocache._
     import crystailx.scalaflagr.data._
     import crystailx.scalaflagr.effect._
     import crystailx.scalaflagr.json._
-    import crystailx.scalaflagr.cache.nocache._
 
     import scala.concurrent.ExecutionContext.Implicits.global
     implicit val encoder: crystailx.scalaflagr.json.Encoder[EvalContext] =
@@ -22,13 +22,13 @@ class TestSpec extends AnyFlatSpec {
       override def decodeSafe(value: RawValue): Either[Throwable, EvalResult] =
         Left(new Exception(""))
     }
-    val flagrClient = FlagrClient(new HttpClient[Future] {
+    val flagrClient: FlagrClient[Future] = FlagrClient(new HttpClient[Future] {
 
       override protected val config: FlagrConfig = FlagrConfig()
 
       override def send(request: FlagrRequest): Future[RawValue] = Future(Array.emptyByteArray)
     })
 
-    val service = FlagrService(flagrClient)
+    val service = FlagrService[String, Future](flagrClient)
   }
 }

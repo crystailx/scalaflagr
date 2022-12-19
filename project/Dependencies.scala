@@ -10,6 +10,7 @@ object Dependencies {
   private val catsVersion = "2.8.0"
   private val twitterVersion = "22.7.0"
   private val redisVersion = "2.4.3"
+  private val scaffeineVersion = "5.2.1"
   private val playJsonVersion = "2.9.3"
   private val jacksonVersion = "2.13.4"
   private val scalatestVersion = "3.2.14"
@@ -57,6 +58,10 @@ object Dependencies {
 
   def redis: Seq[ModuleID] = Seq(
     "com.github.scredis" %% "scredis" % redisVersion
+  )
+
+  def scaffeine: Seq[ModuleID] = Seq(
+    "com.github.blemale" %% "scaffeine" % scaffeineVersion
   )
 
   def test: Seq[ModuleID] =

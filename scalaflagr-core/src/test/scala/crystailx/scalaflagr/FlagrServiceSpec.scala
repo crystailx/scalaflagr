@@ -3,7 +3,14 @@ package crystailx.scalaflagr
 import com.typesafe.scalalogging.LazyLogging
 import crystailx.scalaflagr.cache.{ CacheKeyCreator, Cacher }
 import crystailx.scalaflagr.client.HttpClient
-import crystailx.scalaflagr.data.{ BasicContext, EvalContext, EvalResult, RawValue }
+import crystailx.scalaflagr.data.{
+  BasicContext,
+  EntityContext,
+  EvalContext,
+  EvalResult,
+  FlagrContext,
+  RawValue
+}
 import crystailx.scalaflagr.effect.{ Applicative, Functor, Monad }
 import crystailx.scalaflagr.json.{ Decoder, Encoder }
 import org.scalatest.OptionValues.convertOptionToValuable
@@ -43,8 +50,9 @@ class FlagrServiceSpec extends FixtureAnyFlatSpec with Matchers with LazyLogging
     }
 
     implicit val cacheKeyCreator: CacheKeyCreator[String] =
-      (v1: String, v2: String, v3: String, v4: Option[RawValue]) => {
-        val key = s"$v1-$v2-$v3-${v4.map(new String(_).take(10)).getOrElse("")}"
+      (context: FlagrContext) => {
+        val EntityContext(v1, v2, v3, v4) = context
+        val key = s"$v1-$v3-$v4-${v2.map(new String(_).take(10)).getOrElse("")}"
         logger.debug(s"created key: $key")
         key
       }

@@ -6,7 +6,7 @@ lazy val scala212 = "2.12.17"
 lazy val scala211 = "2.11.12"
 lazy val supportedScalaVersions = Seq(scala213, scala212 /*, scala211*/ )
 ThisBuild / organization := "io.github.crystailx"
-ThisBuild / version := "1.3.0"
+ThisBuild / version := "1.4.0"
 ThisBuild / scalaVersion := scala213
 ThisBuild / crossScalaVersions := supportedScalaVersions
 ThisBuild / trackInternalDependencies := TrackLevel.TrackAlways
@@ -83,10 +83,16 @@ lazy val jsonJackson = (project in file("scalaflagr-json-jackson"))
   .settings(libraryDependencies ++= Dependencies.jackson)
   .dependsOn(coreWithTest)
 
-lazy val redisCache = (project in file("scalaflagr-cache-scredis"))
+lazy val scredisCache = (project in file("scalaflagr-cache-scredis"))
   .settings(name := "scalaflagr-cache-scredis")
   .settings(moduleSettings)
   .settings(libraryDependencies ++= Dependencies.redis)
+  .dependsOn(core)
+
+lazy val scaffeineCache = (project in file("scalaflagr-cache-scaffeine"))
+  .settings(name := "scalaflagr-cache-scaffeine")
+  .settings(moduleSettings)
+  .settings(libraryDependencies ++= Dependencies.scaffeine)
   .dependsOn(core)
 
 lazy val root = (project in file("."))
@@ -95,4 +101,14 @@ lazy val root = (project in file("."))
     crossScalaVersions := Nil,
     update / aggregate := false
   )
-  .aggregate(core, sttp1Client, catsEffect, twitterEffect, jsonCirce, jsonPlay, jsonJackson, redisCache)
+  .aggregate(
+    core,
+    sttp1Client,
+    catsEffect,
+    twitterEffect,
+    jsonCirce,
+    jsonPlay,
+    jsonJackson,
+    scredisCache,
+    scaffeineCache
+  )
